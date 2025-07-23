@@ -1,7 +1,7 @@
 {
-  "name": "odin_template",
+  "name": "odin-battleship",
   "version": "1.0.0",
-  "description": "The template repository to initial practices in The Odin Project",
+  "description": "Practice of \"Project: Battleship\" in The Odin Project",
   "main": "index.js",
   "scripts": {
     "test": "jest",

@@ -1,5 +1,3 @@
-export { Ship };
-
 class Ship {
     constructor(length, hits = 0, sunkState = false) {
         this.length = length;
@@ -18,3 +16,5 @@ class Ship {
         return this.sunkState;
     }
 }
+
+export { Ship };
