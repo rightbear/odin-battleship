@@ -1,47 +1,15 @@
 import { describe, test, expect } from "@jest/globals";
-import { Ship } from "./ship.js";
-import { Gameboard } from "./gameboard.js"
+import { Gameboard } from "../src/item/gameboard.js"
 
-describe("Hit ship", () => {
-  test("Hit ship with 1 length 0 times", () => {
-    const ship = new Ship(1);
-    expect(ship.isSunk()).toBe(false);
+describe(("Get dimensions"), () => {
+  test("Get dimension of gameboard with 1 x 1", () => {
+    let gameboard = new Gameboard(1, 1);
+    expect(gameboard.getDimensions()).toEqual([1, 1]);
   });
 
-  test("Hit ship with 1 length 1 times", () => {
-    const ship = new Ship(1);
-    ship.hit();
-    expect(ship.isSunk()).toBe(true);
-  });
-
-  test("Hit ship with 1 length 2 times", () => {
-    const ship = new Ship(1);
-    ship.hit();
-    expect(ship.isSunk()).toBe(true);
-  });
-
-  test("Hit ship with 5 length 4 times", () => {
-    const ship = new Ship(5);
-    for(let i = 1 ; i <= 4 ; i++){
-      ship.hit();
-    }
-    expect(ship.isSunk()).toBe(false);
-  });
-
-  test("Hit ship with 5 length 5 times", () => {
-    const ship = new Ship(5);
-    for(let i = 1 ; i <= 5 ; i++){
-      ship.hit();
-    }
-    expect(ship.isSunk()).toBe(true);
-  });
-
-  test("Hit ship with 5 length 6 times", () => {
-    const ship = new Ship(5);
-    for(let i = 1 ; i <= 6 ; i++){
-      ship.hit();
-    }
-    expect(ship.isSunk()).toBe(true);
+  test("Get dimension of gameboard with 10 x 10", () => {
+    let gameboard = new Gameboard(10, 10);
+    expect(gameboard.getDimensions()).toEqual([10, 10]);
   });
 });
 
@@ -49,7 +17,7 @@ describe(("Add ship"), () => {
   let gameboard;
     
   beforeEach(() => {
-      gameboard = new Gameboard(10, 10);
+    gameboard = new Gameboard(10, 10);
   });
 
   test("Add ship with 0 length", () => {
@@ -87,20 +55,20 @@ describe(("Add ship"), () => {
   });
 });
 
-describe(("Attack ship"), () => {
+describe(("Receive attacks on ships"), () => {
   let gameboard;
     
   beforeEach(() => {
       gameboard = new Gameboard(10, 10);
   });
 
-  test("Attack first ship with 1 length 1 time", () => {
+  test("Receive the attack on first ship with 1 length 1 time", () => {
     let shipRange = [[0, 0]]
     let shipID = gameboard.addShip(shipRange);
     expect(gameboard.receiveAttack(0, 0)).toBe(0);
   });
 
-  test("Attack third ship with 5 length 4 times", () => {
+  test("Receive the attack on third ship with 5 length 4 times", () => {
     let ship1Range = [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]]
     let ship2Range = [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4]]
     let ship3Range = [[2, 0], [2, 1], [2, 2], [2, 3], [2, 4]]
@@ -113,7 +81,7 @@ describe(("Attack ship"), () => {
     expect(gameboard.receiveAttack(2, 3)).toBe(2);
   });
 
-  test("Attack second ship with 2 length 2 times", () => {
+  test("Receive the attack on second ship with 2 length 2 times", () => {
     let ship1Range = [[0, 2], [0, 3]]
     let ship2Range = [[1, 3], [1, 4]]
     let ship1ID = gameboard.addShip(ship1Range);

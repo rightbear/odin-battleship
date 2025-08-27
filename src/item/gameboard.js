@@ -1,13 +1,15 @@
 import { Ship } from "./ship.js";
 
 class Gameboard {
+    #rows;
+    #columns;
     #shipList;
     #playBoard;
     #sunkShipNum;
 
     constructor(rows = 10, columns = 10) {
-        this.rows = rows;
-        this.columns = columns;
+        this.#rows = rows;
+        this.#columns = columns;
         this.#shipList = [];
         this.#sunkShipNum = 0;
         this.#playBoard = Array.from({ length: rows }, () => new Array(columns).fill(-1));
@@ -15,17 +17,23 @@ class Gameboard {
     
     #markShipOnBoard(shipRangeArray, shipID) {
         for (const [row, col] of shipRangeArray) {
-            if (row < 0 || row >= this.rows || col < 0 || col >= this.columns) {
-                throw new Error('Coordinate is over the range of gameboard');
-            }
-
             this.#playBoard[row][col] = shipID;
         }
+    }
+
+    getDimensions() {
+        return [this.#rows, this.#columns]
     }
 
     addShip(shipRangeArray) {
         if (!shipRangeArray || shipRangeArray.length === 0) {
             throw new Error('The range of ship body cannot be empty');
+        }
+
+        for (const [row, col] of shipRangeArray) {
+            if (row < 0 || row >= this.#rows || col < 0 || col >= this.#columns) {
+                throw new Error('Coordinate is over the range of gameboard');
+            }
         }
 
         const shipID = (this.#shipList).length;
