@@ -35,3 +35,33 @@ export function loadInitialLayout(){
     addHeaderRegion();
     addContentRegion();
 }
+
+// gameMode -> 0: player vs computer, 1: player1 vs player2
+// roleID -> 0: Computer(right), 1: Player1(left), 2: Player2(right)
+export function addGameRegion(gameMode, roleID, position) {
+    const gameRegion = document.createElement("div");
+    gameRegion.classList.add("gameRegion");
+    gameRegion.dataset.role = roleID
+    gameRegion.id = position;
+
+    const rTitle = document.createElement("div");
+    rTitle.classList.add("regionTitle");
+    if(gameMode === 0 && roleID === 0){
+        rTitle.textContent = "Opponent Water"
+    }
+    else if(gameMode === 0 && roleID === 1){
+        rTitle.textContent = "Friendly Water"
+    }
+    else if(gameMode === 1 && roleID === 1){
+        rTitle.textContent = "Player1 Water"
+    }
+    else if(gameMode === 1 && roleID === 2){
+        rTitle.textContent = "Player2 Water"
+    }
+
+    const rGrid = document.createElement("div");
+    rGrid.classList.add("regionGrid");
+
+    gameRegion.append(rTitle, rGrid)
+    return gameRegion
+}
