@@ -1,3 +1,4 @@
 import "./styles.css";
+import * as DOMControlModule from "./function/DOMControl" 
 
-console.log("Game Over");
+DOMControlModule.loadInitialLayout()
