@@ -15,17 +15,17 @@ describe(("Get player's name"), () => {
     });
 })
 
-describe(("Check player's role"), () => {
+describe(("Get player's role"), () => {
     let player;
 
-    test("Check player's role, which is not Compter", () => {
+    test("Get player's role, which is not Computer", () => {
         player = new Player("Odin", false, 10, 10);
-        expect(player.checkPlayerRole()).toBe(false);
+        expect(player.getPlayerRole()).toBe(false);
     });
 
-    test("Check player's role, which is Compter", () => {
+    test("Get player's role, which is Computer", () => {
         player = new Player("Computer", true, 10, 10);
-        expect(player.checkPlayerRole()).toBe(true);
+        expect(player.getPlayerRole()).toBe(true);
     });
 })
 
@@ -50,6 +50,37 @@ describe(("Add ship"), () => {
         let shipRange = [[0, 0]]
         expect(player.addShip(shipRange)).toBe(0);
     });
+})
+
+describe(("Get player's gameboard"), () => {
+    let player;
+
+    test("Get player's gameboard of 2x2 with no ships", () => {
+        player = new Player("Odin", false, 2, 2);
+        let expected = [[-1, -1], [-1, -1]]
+        expect(player.getGameboard()).toEqual(expected);
+    });
+
+    
+    test("Get player's gameboard of 2x2 with 1 ships", () => {
+        player = new Player("Computer", true, 2, 2);
+        let shipRange = [[0, 0]]
+        let shipID = player.addShip(shipRange)
+        let expected = [[0, -1], [-1, -1]]
+        expect(player.getGameboard()).toEqual(expected);
+    });
+
+    
+    test("Get player's gameboard of 3x3 with 2 ships", () => {
+        player = new Player("Computer", true, 3, 3);
+        let ship1Range = [[0, 0]]
+        let ship2Range = [[1, 1], [2, 1]]
+        let ship1ID = player.addShip(ship1Range)
+        let ship2ID = player.addShip(ship2Range)
+        let expected = [[0, -1, -1], [-1, 1, -1], [-1, 1, -1]]
+        expect(player.getGameboard()).toEqual(expected);
+    });
+    
 })
 
 describe(("Receive attacks on ships"), () => {

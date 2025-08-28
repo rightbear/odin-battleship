@@ -44,7 +44,7 @@ body {
   grid-row: 2 / -1;
 
   display: grid;
-  grid-template-columns: repeat(21, 1fr);
+  grid-template-columns: repeat(22, 1fr);
 
   justify-content: center;
   align-items: center;
@@ -59,7 +59,7 @@ body {
 }
 
 #rightRegion {
-  grid-column: 13 / 21;
+  grid-column: 14 / 22;
 }
 
 .gameRegion {

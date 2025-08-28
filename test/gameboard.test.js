@@ -55,6 +55,35 @@ describe(("Add ship"), () => {
   });
 });
 
+describe(("Get playBoard"), () => {
+    let gameboard;
+
+    test("Get playBoard of 2x2 with no ships", () => {
+        gameboard = new Gameboard(2, 2);
+        let expected = [[-1, -1], [-1, -1]]
+        expect(gameboard.getPlayBoard()).toEqual(expected);
+    });
+
+    
+    test("Get playBoard of 2x2 with 1 ships", () => {
+        gameboard = new Gameboard(2, 2);
+        let shipRange = [[0, 0]]
+        let shipID = gameboard.addShip(shipRange)
+        let expected = [[0, -1], [-1, -1]]
+        expect(gameboard.getPlayBoard()).toEqual(expected);
+    });
+
+    test("Get playBoard of 3x3 with 2 ships", () => {
+        gameboard = new Gameboard(3, 3);
+        let ship1Range = [[0, 0]]
+        let ship2Range = [[1, 1], [2, 1]]
+        let ship1ID = gameboard.addShip(ship1Range)
+        let ship2ID = gameboard.addShip(ship2Range)
+        let expected = [[0, -1, -1], [-1, 1, -1], [-1, 1, -1]]
+        expect(gameboard.getPlayBoard()).toEqual(expected);
+    });
+})
+
 describe(("Receive attacks on ships"), () => {
   let gameboard;
     

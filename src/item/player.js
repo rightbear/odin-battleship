@@ -17,12 +17,16 @@ class Player {
         return this.#playerName;
     }
 
-    checkPlayerRole() {
+    getPlayerRole() {
         return this.#isComputer;
     }
 
     addShip(shipRangeArray) {
         return this.#gameboard.addShip(shipRangeArray);
+    }
+
+    getGameboard() {
+        return this.#gameboard.getPlayBoard();
     }
 
     receiveAttack(row, col) {
@@ -45,7 +49,7 @@ class Player {
     }
 
     makeComputerAttack(opponent) {
-        if(!this.checkPlayerRole()) {
+        if(!this.getPlayerRole()) {
             throw new Error('Only computer players can make automatic attacks');
         }
 

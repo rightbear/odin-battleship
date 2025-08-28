@@ -25,13 +25,22 @@ const leftShipList = [[[0, 2], [0, 3], [0, 4], [0, 5], [0, 6]],
                       [[5, 1], [6, 1], [7, 1], [8, 1]],
                       [[6, 4], [6, 5], [6, 6]],
                       [[2, 8], [3, 8], [4, 8]],
-                      [[4, 3], [4, 4]]]
+                      [[4, 3], [4, 4]]];
 
 const rightShipList = [[[0, 2], [0, 3], [0, 4], [0, 5], [0, 6]],
-                      [[5, 1], [6, 1], [7, 1], [8, 1]],
-                      [[6, 4], [6, 5], [6, 6]],
-                      [[2, 8], [3, 8], [4, 8]],
-                      [[4, 3], [4, 4]]]
+                       [[5, 1], [6, 1], [7, 1], [8, 1]],
+                       [[6, 4], [6, 5], [6, 6]],
+                       [[2, 8], [3, 8], [4, 8]],
+                       [[4, 3], [4, 4]]];
 
-DOMControlModule.markShipsOnLeftGrid(leftShipList, gridDimension)
-DOMControlModule.markShipsOnRightGrid(rightShipList, gridDimension)
+
+for(let i = 0 ; i< leftShipList.length ; i++){
+    leftPlayer.addShip(leftShipList[i]);
+}
+
+for(let i = 0 ; i< rightShipList.length ; i++){
+    rightPlayer.addShip(rightShipList[i]);
+}
+
+DOMControlModule.markShipsOnLeftGrid(leftPlayer.getGameboard(), gridDimension)
+DOMControlModule.markShipsOnRightGrid(rightPlayer.getGameboard(), gridDimension)

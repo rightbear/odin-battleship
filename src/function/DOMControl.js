@@ -88,30 +88,34 @@ function addRegionGrid(dimension){
 }
 
 
-export function markShipsOnLeftGrid(leftShipList, gridDimension = 10){
+export function markShipsOnLeftGrid(leftGameboard, gridDimension = 10){
     const leftGridButtons = document.querySelectorAll('#leftRegion .regionGrid .gridButton');
 
-    for(let shipID = 0 ; shipID < leftShipList.length ; shipID++) {
-        const currentShip = leftShipList[shipID]
-        for(let coordinate = 0 ; coordinate < currentShip.length ; coordinate++){
-            const [coordX, coordY] = currentShip[coordinate]
+    for(let row = 0 ; row < gridDimension ; row++) {
+        for(let col = 0 ; col < gridDimension ; col++){
+            const currentButton = leftGridButtons[row * gridDimension + col]
 
-            const currentButton = leftGridButtons[coordX * gridDimension + coordY]
-            currentButton.style.backgroundColor = 'green';
+            const shipID = leftGameboard[row][col]
+            currentButton.dataset.shipid = shipID
+            if(shipID >= 0){
+                currentButton.style.backgroundColor = 'green';
+            }
         }
     }
 }
 
-export function markShipsOnRightGrid(rightShipList, gridDimension = 10){
-    const leftGridButtons = document.querySelectorAll('#rightRegion .regionGrid .gridButton');
+export function markShipsOnRightGrid(rightGameboard, gridDimension = 10){
+    const rightGridButtons = document.querySelectorAll('#rightRegion .regionGrid .gridButton');
 
-    for(let shipID = 0 ; shipID < rightShipList.length ; shipID++) {
-        const currentShip = rightShipList[shipID]
-        for(let coordinate = 0 ; coordinate < currentShip.length ; coordinate++){
-            const [coordX, coordY] = currentShip[coordinate]
+    for(let row = 0 ; row < gridDimension ; row++) {
+        for(let col = 0 ; col < gridDimension ; col++){
+            const currentButton = rightGridButtons[row * gridDimension + col]
 
-            const currentButton = leftGridButtons[coordX * gridDimension + coordY]
-            currentButton.style.backgroundColor = 'green';
+            const shipID = rightGameboard[row][col]
+            currentButton.dataset.shipid = shipID
+            if(shipID >= 0){
+                currentButton.style.backgroundColor = 'green';
+            }
         }
     }
 }

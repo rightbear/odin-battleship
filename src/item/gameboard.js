@@ -42,6 +42,10 @@ class Gameboard {
         return shipID;
     }
 
+    getPlayBoard(){
+        return this.#playBoard
+    }
+
     receiveAttack(row, col) {
         const targetID = this.#playBoard[row][col];
         if(targetID >= 0){
