@@ -38,7 +38,7 @@ export function loadInitialLayout(){
 
 // gameMode -> 0: player vs computer, 1: player1 vs player2
 // roleID -> 0: Computer(right), 1: Player1(left), 2: Player2(right)
-export function addGameRegion(gameMode, roleID, position) {
+export function addGameRegion(gameMode, roleID, position, gridDimension = 10) {
     const gameRegion = document.createElement("div");
     gameRegion.classList.add("gameRegion");
     gameRegion.dataset.role = roleID
@@ -59,9 +59,59 @@ export function addGameRegion(gameMode, roleID, position) {
         rTitle.textContent = "Player2 Water"
     }
 
-    const rGrid = document.createElement("div");
-    rGrid.classList.add("regionGrid");
+    const rGrid = addRegionGrid(gridDimension)
 
     gameRegion.append(rTitle, rGrid)
     return gameRegion
+}
+
+function addRegionGrid(dimension){
+    const gridContainer = document.createElement("div");
+    gridContainer.classList.add("regionGrid");
+
+    gridContainer.style.gridTemplateColumns = `repeat(${dimension}, 1fr)`;
+    gridContainer.style.gridTemplateRows = `repeat(${dimension}, 1fr)`;
+
+    for (let i = 0; i < dimension; i++) {
+        for (let j = 0; j < dimension; j++) {
+            const button = document.createElement('button');
+            button.className = 'gridButton'; // Optional: add a class for styling
+            // Optional: Add an event listener to each button
+            button.addEventListener('click', () => {
+                console.log(`Button at row ${i}, column ${j} clicked!`);
+            });
+            gridContainer.appendChild(button);
+        }
+    }
+
+    return gridContainer
+}
+
+
+export function markShipsOnLeftGrid(leftShipList, gridDimension = 10){
+    const leftGridButtons = document.querySelectorAll('#leftRegion .regionGrid .gridButton');
+
+    for(let shipID = 0 ; shipID < leftShipList.length ; shipID++) {
+        const currentShip = leftShipList[shipID]
+        for(let coordinate = 0 ; coordinate < currentShip.length ; coordinate++){
+            const [coordX, coordY] = currentShip[coordinate]
+
+            const currentButton = leftGridButtons[coordX * gridDimension + coordY]
+            currentButton.style.backgroundColor = 'green';
+        }
+    }
+}
+
+export function markShipsOnRightGrid(rightShipList, gridDimension = 10){
+    const leftGridButtons = document.querySelectorAll('#rightRegion .regionGrid .gridButton');
+
+    for(let shipID = 0 ; shipID < rightShipList.length ; shipID++) {
+        const currentShip = rightShipList[shipID]
+        for(let coordinate = 0 ; coordinate < currentShip.length ; coordinate++){
+            const [coordX, coordY] = currentShip[coordinate]
+
+            const currentButton = leftGridButtons[coordX * gridDimension + coordY]
+            currentButton.style.backgroundColor = 'green';
+        }
+    }
 }
