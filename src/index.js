@@ -14,9 +14,11 @@ const rightName = 'Computer';
 const gridDimension = 10
 
 const content = document.querySelector('.content');
+const messageRegion = DOMControlModule.addMessageRegion();
+const objectRegion = DOMControlModule.addObjectRegion();
 const leftGameRegion = DOMControlModule.addGameRegion(gameMode, leftRole, 'leftRegion', gridDimension);
 const rightGameRegion = DOMControlModule.addGameRegion(gameMode, rightRole, 'rightRegion', gridDimension);
-content.append(leftGameRegion, rightGameRegion)
+content.append(messageRegion, objectRegion, leftGameRegion, rightGameRegion)
 
 const leftPlayer = new Player(leftName, isLeftCom, gridDimension, gridDimension)
 const rightPlayer = new Player(rightName, isRightCom, gridDimension, gridDimension)
@@ -42,5 +44,5 @@ for(let i = 0 ; i< rightShipList.length ; i++){
     rightPlayer.addShip(rightShipList[i]);
 }
 
-DOMControlModule.markShipsOnLeftGrid(leftPlayer.getGameboard(), gridDimension)
-DOMControlModule.markShipsOnRightGrid(rightPlayer.getGameboard(), gridDimension)
+DOMControlModule.markShipsOnGrid(leftRole, leftPlayer.getGameboard(), gridDimension)
+DOMControlModule.markShipsOnGrid(rightRole, rightPlayer.getGameboard(), gridDimension)

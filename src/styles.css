@@ -45,6 +45,7 @@ body {
 
   display: grid;
   grid-template-columns: repeat(22, 1fr);
+  grid-template-rows: repeat(15, 1fr);
 
   justify-content: center;
   align-items: center;
@@ -54,12 +55,33 @@ body {
 
 /*************************/
 
+.messageRegion {
+  grid-column: 1 / 23;
+  grid-row: 1 / 3;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+}
+
+.objectRegion {
+  grid-column: 10 / 14;
+  grid-row: 3 / -1;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #leftRegion {
   grid-column: 2 / 10;
+  grid-row: 3 / 14;
 }
 
 #rightRegion {
   grid-column: 14 / 22;
+  grid-row: 3 / 14;
 }
 
 .gameRegion {
