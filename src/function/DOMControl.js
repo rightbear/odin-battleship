@@ -1,12 +1,12 @@
 // Create div container for all elements
-function addMain (){
+function addMain(){
     const main = document.createElement("div");
     main.classList.add("main");
     document.body.appendChild(main);
 }
 
 // Load basic elements in the header
-function addHeader (){
+function addHeader(){
     const main = document.querySelector(".main");
 
     const header = document.createElement("div");
@@ -39,7 +39,13 @@ export function loadInitialLayout(){
 export function addMessageRegion() {
     const messageRegion = document.createElement("div");
     messageRegion.classList.add("messageRegion");
-    messageRegion.textContent = "Round 0";
+    
+    const turnMsg = document.createElement("div");
+    turnMsg.classList.add("turnMsg");
+    const turnIndicator = document.createElement("div");
+    turnIndicator.classList.add("turnIndicator");
+    messageRegion.append(turnMsg, turnIndicator);
+
     return messageRegion;
 }
 
@@ -89,7 +95,7 @@ function addRegionGrid(dimension){
     for (let i = 0; i < dimension; i++) {
         for (let j = 0; j < dimension; j++) {
             const button = document.createElement('button');
-            button.className = 'gridButton'; // Optional: add a class for styling
+            button.className = 'gridCell'; // Optional: add a class for styling
             // Optional: Add an event listener to each button
             button.addEventListener('click', () => {
                 console.log(`Button at row ${i}, column ${j} clicked!`);
@@ -101,16 +107,8 @@ function addRegionGrid(dimension){
     return gridContainer
 }
 
-
-export function markShipsOnGrid(roleID, gameboard, gridDimension = 10){
-    let gridButtons;
-
-    if(roleID === 1){
-        gridButtons = document.querySelectorAll('#leftRegion .regionGrid .gridButton');
-    }
-    else {
-        gridButtons = document.querySelectorAll('#rightRegion .regionGrid .gridButton');
-    }
+export function markShipsOnGrid(regionGrid, gameboard, gridDimension = 10){
+    const gridButtons = regionGrid.querySelectorAll('.gridCell');
 
     for(let row = 0 ; row < gridDimension ; row++) {
         for(let col = 0 ; col < gridDimension ; col++){
@@ -125,50 +123,112 @@ export function markShipsOnGrid(roleID, gameboard, gridDimension = 10){
     }
 }
 
+export function disableBoard(regionGrid) {
+    regionGrid.style.cursor = 'not-allowed';
+    const cells = regionGrid.querySelectorAll('.gridCell');
+    cells.forEach(cell => {
+        cell.style.pointerEvents = 'none';
+    });
+}
+
+export function enableBoard(regionGrid) {
+    regionGrid.style.cursor = 'pointer';
+    const cells = regionGrid.querySelectorAll('.gridCell');
+    cells.forEach(cell => {
+        cell.style.pointerEvents = 'auto';
+    });
+}
+
+export function disableAllBoards() {
+    const regionGrids = document.querySelectorAll('.regionGrid');
+    regionGrids.forEach(regionGrid => this.disableBoard(regionGrid));
+}
+
+
+export function showTurnIndicator(playerName, speed = 100) { 
+    const turnIndicator = document.querySelector('.turnIndicator')
+    const message = `It's ${playerName}'s turn`;
+
+    return new Promise(resolve => {
+        turnIndicator.textContent = '';
+        let index = 0;
+        
+        function typeNextCharacter() {
+            if (index < message.length) {
+                turnIndicator.textContent += message.charAt(index);
+                index++;
+                setTimeout(typeNextCharacter, speed);
+            } else {
+                // Remove cursor and stop animation
+                turnIndicator.textContent = message;
+                resolve();
+            }
+        }
+        
+        typeNextCharacter();
+    });
+}
+
+export function showTurnMessage(message, type = 'info', speed = 100) {
+    const turnMsg = document.querySelector('.turnMsg');
+    turnMsg.className = `turnMsg ${type}`;
+    
+    return new Promise(resolve => {
+        turnMsg.textContent = '';
+        let index = 0;
+        
+        function typeNextCharacter() {
+            if (index < message.length) {
+                turnMsg.textContent += message.charAt(index);
+                index++;
+                setTimeout(typeNextCharacter, speed);
+            } else {
+                // Remove cursor and stop animation
+                turnMsg.textContent = message;
+                resolve();
+            }
+        }
+        
+        typeNextCharacter();
+    });
+}
+
+export async function testMessageAnimation(playerName, message){
+    try {
+        // Simutaneoulty execute two functions related to CSS animation
+        await Promise.all([
+            showTurnIndicator(playerName),
+            showTurnMessage(message)
+        ]);
+        
+        // After the two animation functions complete, program can execute this line
+        console.log('Animation complete！Start executing the following tasks...');
+        
+        // The following JavaScript programs
+        await simulatePostAnimationTask();
+        
+        console.log('All tasks complete！');
+        
+    } catch (error) {
+        console.error('Animations execute incorrectly:', error);
+        console.log('There is error when executing the animation functions');
+    } finally {
+        console.log("Keep executing programs");
+    }
+}
+
+// Simulate the following tasks after the animation functions complete
+async function simulatePostAnimationTask() {
+    // Simulate a asynchronnous task（Like：API calls、Data processing...etc.）
+    return new Promise(resolve => {
+        setTimeout(() => {
+            console.log('The following execution of tasks complete');
+            resolve();
+        }, 10000);
+    });
+}
 
 /*
-disableBoard(boardElement) {
-        boardElement.classList.add('disabled');
-        const cells = boardElement.querySelectorAll('.cell');
-        cells.forEach(cell => {
-            cell.style.pointerEvents = 'none';
-            cell.style.cursor = 'not-allowed';
-        });
-    }
-
-    enableBoard(boardElement) {
-        boardElement.classList.remove('disabled');
-        const cells = boardElement.querySelectorAll('.cell');
-        cells.forEach(cell => {
-            cell.style.pointerEvents = 'auto';
-            cell.style.cursor = 'pointer';
-        });
-    }
-
-    enableOpponentBoard(opponentBoard = null) {
-        const board = opponentBoard || document.querySelector('#player2-board');
-        this.enableBoard(board);
-    }
-
-    disableAllBoards() {
-        const boards = document.querySelectorAll('.game-board');
-        boards.forEach(board => this.disableBoard(board));
-    }
-
-    showTurnIndicator(playerName) {
-        if (this.turnIndicator) {
-            this.turnIndicator.textContent = `輪到 ${playerName} 攻擊`;
-            this.turnIndicator.className = 'turn-indicator active';
-        }
-    }
-
-    showGameMessage(message, type = 'info') {
-        if (this.gameMessage) {
-            this.gameMessage.textContent = message;
-            this.gameMessage.className = `game-message ${type}`;
-        }
-    }
-
     async playAttackAnimation(cellElement, isHit) {
         const animationClass = isHit ? 'hit-animation' : 'miss-animation';
         const resultClass = isHit ? 'hit' : 'miss';

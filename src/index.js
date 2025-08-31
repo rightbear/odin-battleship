@@ -44,5 +44,11 @@ for(let i = 0 ; i< rightShipList.length ; i++){
     rightPlayer.addShip(rightShipList[i]);
 }
 
-DOMControlModule.markShipsOnGrid(leftRole, leftPlayer.getGameboard(), gridDimension)
-DOMControlModule.markShipsOnGrid(rightRole, rightPlayer.getGameboard(), gridDimension)
+DOMControlModule.markShipsOnGrid(leftGameRegion.querySelector('.regionGrid'), leftPlayer.getGameboard(), gridDimension);
+DOMControlModule.markShipsOnGrid(rightGameRegion.querySelector('.regionGrid'), rightPlayer.getGameboard(), gridDimension);
+
+//DOMControlModule.disableBoard(leftGameRegion.querySelector('.regionGrid'));
+//DOMControlModule.enableBoard(leftGameRegion.querySelector('.regionGrid'));
+
+DOMControlModule.disableAllBoards();
+DOMControlModule.testMessageAnimation(leftName, 'Test showTurnMessage');
