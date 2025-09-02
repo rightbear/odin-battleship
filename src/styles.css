@@ -77,6 +77,8 @@ body {
   font-size: 1.5rem;
 }
 
+/*************************/
+
 .objectRegion {
   grid-column: 10 / 14;
   grid-row: 4 / -1;
@@ -95,6 +97,8 @@ body {
   grid-column: 14 / 22;
   grid-row: 4 / 15;
 }
+
+/*************************/
 
 .gameRegion {
   height: 100%;
@@ -119,9 +123,48 @@ body {
   max-height: 500px;
 
   display: grid;
+  
 }
 
-.regionGrid button {
+.gridCell {
   height: 100%;
   width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition-duration: 0.5s;
+  cursor: crosshair;
+  background-color: CornflowerBlue;
+}
+
+.gridCell:hover {
+  background-color: ForestGreen;
+}
+
+.gridCell.missCell,
+.gridCell.hitCell {
+  cursor: not-allowed;
+}
+
+.gridCell.missCell:hover,
+.gridCell.hitCell:hover {
+  background-color: IndianRed;
+}
+
+/* Draw a circle */
+.attackDot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 1px solid black;
+}
+
+.attackDot.hitDot {
+  background-color: red;
+}
+
+.attackDot.missDot {
+  background-color: white;
 }

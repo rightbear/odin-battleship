@@ -6,7 +6,7 @@ class Player {
     #gameboard;
     #attackOpponentHistory;
 
-    constructor(playerName, isComputer = false, rows = 10, columns = 10) {
+    constructor(playerName, isComputer = false, rows, columns) {
         this.#playerName = playerName;
         this.#isComputer = isComputer;
         this.#gameboard = new Gameboard(rows, columns);
@@ -21,12 +21,13 @@ class Player {
         return this.#isComputer;
     }
 
-    addShip(shipRangeArray) {
-        return this.#gameboard.addShip(shipRangeArray);
-    }
-
+    // return the copy of current gameboard
     getGameboard() {
         return this.#gameboard.getPlayBoard();
+    }
+    
+    addShip(shipRangeArray) {
+        return this.#gameboard.addShip(shipRangeArray);
     }
 
     receiveAttack(row, col) {

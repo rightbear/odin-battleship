@@ -92,60 +92,97 @@ function addRegionGrid(dimension){
     gridContainer.style.gridTemplateColumns = `repeat(${dimension}, 1fr)`;
     gridContainer.style.gridTemplateRows = `repeat(${dimension}, 1fr)`;
 
-    for (let i = 0; i < dimension; i++) {
-        for (let j = 0; j < dimension; j++) {
-            const button = document.createElement('button');
-            button.className = 'gridCell'; // Optional: add a class for styling
-            // Optional: Add an event listener to each button
-            button.addEventListener('click', () => {
-                console.log(`Button at row ${i}, column ${j} clicked!`);
-            });
-            gridContainer.appendChild(button);
+    for (let row = 0; row < dimension; row++) {
+        for (let col = 0; col < dimension; col++) {
+            const currentButton = document.createElement('button');
+            currentButton.className = 'gridCell';
+            currentButton.dataset.cellrow = row;
+            currentButton.dataset.cellcol = col;
+
+            gridContainer.appendChild(currentButton);
         }
     }
 
     return gridContainer
 }
 
-export function markShipsOnGrid(regionGrid, gameboard, gridDimension = 10){
-    const gridButtons = regionGrid.querySelectorAll('.gridCell');
+function addListenderOnGrid(opponent, gameRegion){
+    const regionGrid = gameRegion.querySelector(".regionGrid");
 
-    for(let row = 0 ; row < gridDimension ; row++) {
-        for(let col = 0 ; col < gridDimension ; col++){
-            const currentButton = gridButtons[row * gridDimension + col]
+    regionGrid.addEventListener('click', clickHandler);
 
-            const shipID = gameboard[row][col]
-            currentButton.dataset.shipid = shipID
-            if(shipID >= 0){
-                currentButton.style.backgroundColor = 'green';
+    function clickHandler(e) {
+        if (e.target.classList.contains('gridCell')) {
+            const clickedCell = e.target;
+            let containsHitOrMiss = clickedCell.classList.contains('hitCell') || clickedCell.classList.contains('missCell')
+
+            if(!containsHitOrMiss){
+                const row = e.target.dataset.cellrow;
+                const col = e.target.dataset.cellcol;
+
+                console.log(`Button at row ${row}, column ${col} clicked!`)
+                const shipID = opponent.receiveAttack(row, col);
+                const isAttack = true;
+                markAttackResultOnCell(clickedCell, shipID, isAttack);
+                
+                /*
+                setTimeout(() => {
+                    regionGrid.removeEventListener('click', clickHandler);
+                    console.log('EventListener 已在函式執行完成後移除');
+                }, 0);
+                */
             }
         }
     }
 }
 
-export function disableBoard(regionGrid) {
-    regionGrid.style.cursor = 'not-allowed';
-    const cells = regionGrid.querySelectorAll('.gridCell');
-    cells.forEach(cell => {
-        cell.style.pointerEvents = 'none';
-    });
+function markAttackResultOnCell(currentButton, shipID, isAttack){
+    currentButton.dataset.shipid = shipID
+    const shipDot = document.createElement('div');
+    shipDot.classList.add('attackDot')
+
+    // Mark ship dot on cells, and add 'hitCell' or 'missCell' class on cells
+    if(isAttack) {
+        if(shipID >= 0){
+            currentButton.classList.add('hitCell');
+            shipDot.classList.add('hitDot')
+        }
+        else {
+            currentButton.classList.add('missCell');
+            shipDot.classList.add('missDot')
+        }
+    }
+
+    currentButton.appendChild(shipDot)
 }
 
-export function enableBoard(regionGrid) {
-    regionGrid.style.cursor = 'pointer';
-    const cells = regionGrid.querySelectorAll('.gridCell');
-    cells.forEach(cell => {
-        cell.style.pointerEvents = 'auto';
-    });
+export async function testMessageAnimation(player, opponent, message, gameRegion){
+    try {
+        // Simutaneoulty execute two functions related to CSS animation
+        await Promise.all([
+            showTurnIndicator(player.getPlayerName()),
+            showTurnMessage(message)
+        ]);
+        
+        // After the two animation functions complete, program can execute this line
+        console.log('Animation complete！Start executing the following tasks...');
+        
+        // The following JavaScript programs
+        await simulatePostAnimationTask();
+        
+        console.log('All tasks complete！');
+        
+    } catch (error) {
+        console.error('Animations execute incorrectly:', error);
+        console.log('There is error when executing the animation functions');
+    } finally {
+        console.log("Keep executing programs");
+
+        addListenderOnGrid(opponent, gameRegion)
+    }
 }
 
-export function disableAllBoards() {
-    const regionGrids = document.querySelectorAll('.regionGrid');
-    regionGrids.forEach(regionGrid => this.disableBoard(regionGrid));
-}
-
-
-export function showTurnIndicator(playerName, speed = 100) { 
+function showTurnIndicator(playerName, speed = 100) { 
     const turnIndicator = document.querySelector('.turnIndicator')
     const message = `It's ${playerName}'s turn`;
 
@@ -169,7 +206,9 @@ export function showTurnIndicator(playerName, speed = 100) {
     });
 }
 
-export function showTurnMessage(message, type = 'info', speed = 100) {
+
+// type: 'info', 'hit', 'miss', 'sunk', 'winner', 'error'
+function showTurnMessage(message, type = 'info', speed = 100) {
     const turnMsg = document.querySelector('.turnMsg');
     turnMsg.className = `turnMsg ${type}`;
     
@@ -193,30 +232,6 @@ export function showTurnMessage(message, type = 'info', speed = 100) {
     });
 }
 
-export async function testMessageAnimation(playerName, message){
-    try {
-        // Simutaneoulty execute two functions related to CSS animation
-        await Promise.all([
-            showTurnIndicator(playerName),
-            showTurnMessage(message)
-        ]);
-        
-        // After the two animation functions complete, program can execute this line
-        console.log('Animation complete！Start executing the following tasks...');
-        
-        // The following JavaScript programs
-        await simulatePostAnimationTask();
-        
-        console.log('All tasks complete！');
-        
-    } catch (error) {
-        console.error('Animations execute incorrectly:', error);
-        console.log('There is error when executing the animation functions');
-    } finally {
-        console.log("Keep executing programs");
-    }
-}
-
 // Simulate the following tasks after the animation functions complete
 async function simulatePostAnimationTask() {
     // Simulate a asynchronnous task（Like：API calls、Data processing...etc.）
@@ -224,26 +239,11 @@ async function simulatePostAnimationTask() {
         setTimeout(() => {
             console.log('The following execution of tasks complete');
             resolve();
-        }, 10000);
+        }, 100);
     });
 }
 
 /*
-    async playAttackAnimation(cellElement, isHit) {
-        const animationClass = isHit ? 'hit-animation' : 'miss-animation';
-        const resultClass = isHit ? 'hit' : 'miss';
-        
-        cellElement.classList.add(animationClass);
-        cellElement.classList.add(resultClass);
-        
-        return new Promise(resolve => {
-            setTimeout(() => {
-                cellElement.classList.remove(animationClass);
-                resolve();
-            }, 1000);
-        });
-    }
-
     showGameOver(winnerName) {
         this.showGameMessage(`🎉 ${winnerName} 獲勝！`, 'winner');
         this.disableAllBoards();

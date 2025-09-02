@@ -6,11 +6,11 @@ class GameController {
     #currentPlayer;
     #gameState;
 
-    constructor(leftName, isLeftCom, rightName, isRightCom) {
-        this.leftPlayer = new Player(leftName, isLeftCom);
-        this.rightPlayer = new Player(rightName, isRightCom);
-        this.currentPlayer = this.leftPlayer;
-        this.gameState = 'waiting'; // 'waiting', 'attacking', 'game_over'
+    constructor(leftName, isLeftCom, rightName, isRightCom, dimension = 10) {
+        this.#leftPlayer = new Player(leftName, isLeftCom, dimension, dimension);
+        this.#rightPlayer = new Player(rightName, isRightCom, dimension, dimension);
+        this.#currentPlayer = this.#leftPlayer;
+        this.#gameState = 'waiting'; // 'waiting', 'attacking', 'game_over'
     }
     
     getCurrentPlayer() {

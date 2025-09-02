@@ -1,6 +1,6 @@
 import "./styles.css";
 import * as DOMControlModule from "./function/DOMControl" 
-import { Player } from "./item/player"
+import { GameController } from "./item/gameController"
 
 DOMControlModule.loadInitialLayout()
 
@@ -13,15 +13,9 @@ const isRightCom  = true;
 const rightName = 'Computer';
 const gridDimension = 10
 
-const content = document.querySelector('.content');
-const messageRegion = DOMControlModule.addMessageRegion();
-const objectRegion = DOMControlModule.addObjectRegion();
-const leftGameRegion = DOMControlModule.addGameRegion(gameMode, leftRole, 'leftRegion', gridDimension);
-const rightGameRegion = DOMControlModule.addGameRegion(gameMode, rightRole, 'rightRegion', gridDimension);
-content.append(messageRegion, objectRegion, leftGameRegion, rightGameRegion)
-
-const leftPlayer = new Player(leftName, isLeftCom, gridDimension, gridDimension)
-const rightPlayer = new Player(rightName, isRightCom, gridDimension, gridDimension)
+const gameController = new GameController(leftName, isLeftCom, rightName, isRightCom, gridDimension)
+const leftPlayer = gameController.getCurrentPlayer();
+const rightPlayer = gameController.getOpponent();
 
 const leftShipList = [[[0, 2], [0, 3], [0, 4], [0, 5], [0, 6]],
                       [[5, 1], [6, 1], [7, 1], [8, 1]],
@@ -44,11 +38,11 @@ for(let i = 0 ; i< rightShipList.length ; i++){
     rightPlayer.addShip(rightShipList[i]);
 }
 
-DOMControlModule.markShipsOnGrid(leftGameRegion.querySelector('.regionGrid'), leftPlayer.getGameboard(), gridDimension);
-DOMControlModule.markShipsOnGrid(rightGameRegion.querySelector('.regionGrid'), rightPlayer.getGameboard(), gridDimension);
+const content = document.querySelector('.content');
+const messageRegion = DOMControlModule.addMessageRegion();
+const objectRegion = DOMControlModule.addObjectRegion();
+const leftGameRegion = DOMControlModule.addGameRegion(gameMode, leftRole, 'leftRegion', gridDimension);
+const rightGameRegion = DOMControlModule.addGameRegion(gameMode, rightRole, 'rightRegion', gridDimension);
+content.append(messageRegion, objectRegion, leftGameRegion, rightGameRegion)
 
-//DOMControlModule.disableBoard(leftGameRegion.querySelector('.regionGrid'));
-//DOMControlModule.enableBoard(leftGameRegion.querySelector('.regionGrid'));
-
-DOMControlModule.disableAllBoards();
-DOMControlModule.testMessageAnimation(leftName, 'Test showTurnMessage');
+DOMControlModule.testMessageAnimation(leftPlayer, rightPlayer, 'Test showTurnMessage', rightGameRegion);

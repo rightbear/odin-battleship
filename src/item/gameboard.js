@@ -7,22 +7,29 @@ class Gameboard {
     #playBoard;
     #sunkShipNum;
 
-    constructor(rows = 10, columns = 10) {
+    constructor(rows, columns) {
         this.#rows = rows;
         this.#columns = columns;
         this.#shipList = [];
         this.#sunkShipNum = 0;
-        this.#playBoard = Array.from({ length: rows }, () => new Array(columns).fill(-1));
+        this.#playBoard = Array.from({ length: rows }, () => new Array(columns).fill({"shipID": -1, "isHit": false}));
     }
     
     #markShipOnBoard(shipRangeArray, shipID) {
         for (const [row, col] of shipRangeArray) {
-            this.#playBoard[row][col] = shipID;
+            this.#playBoard[row][col] = {"shipID": shipID, "isAttack": false};
         }
     }
 
+    getShip
+
     getDimensions() {
         return [this.#rows, this.#columns]
+    }
+
+    // return the copy of current playboard
+    getPlayBoard(){
+        return structuredClone(this.#playBoard)
     }
 
     addShip(shipRangeArray) {
@@ -42,12 +49,10 @@ class Gameboard {
         return shipID;
     }
 
-    getPlayBoard(){
-        return this.#playBoard
-    }
-
     receiveAttack(row, col) {
-        const targetID = this.#playBoard[row][col];
+        const targetID = this.#playBoard[row][col].shipID;
+        this.#playBoard[row][col].isAttack = true;
+        
         if(targetID >= 0){
             const targetShip = this.#shipList[targetID];
             targetShip.hit();
