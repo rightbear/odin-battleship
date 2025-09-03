@@ -5,17 +5,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-export function cellClickEvent(opponent, gameRegion){
+export function cellClickEvent(gameController, gameRegion){
     const regionGrid = gameRegion.querySelector(".regionGrid");
+
+    let player = gameController.getCurrentPlayer();
+    let opponent = gameController.getOpponent();
 
     regionGrid.addEventListener('click', clickHandler);
 
-    function clickHandler(event) {
+    async function clickHandler(event) {
         if (event.target.classList.contains('gridCell')) {
             const clickedCell = event.target;
             let containsHitOrMiss = clickedCell.classList.contains('hitCell') || clickedCell.classList.contains('missCell')
 
             if(!containsHitOrMiss){
+                gameController.setGameState('attacking');
+
                 const row = event.target.dataset.cellrow;
                 const col = event.target.dataset.cellcol;
 
@@ -24,13 +29,50 @@ export function cellClickEvent(opponent, gameRegion){
                 const isAttack = true;
                 DOMControlModule.markAttackResultOnCell(clickedCell, shipID, isAttack);
                 
-                /*
-                setTimeout(() => {
-                    regionGrid.removeEventListener('click', clickHandler);
-                    console.log('EventListener 已在函式執行完成後移除');
-                }, 0);
-                */
+                //regionGrid.removeEventListener('click', clickHandler);
+
+                const defaultMessage = `${player.getPlayerName()} fires a shot into ${opponent.getPlayerName()}'s waters ...... `;
+                if(shipID >= 0){
+                    if(opponent.checkSunkShip(shipID)){
+                        await DOMControlModule.showTurnMessage(defaultMessage + `and sunk ${opponent.getPlayerName()}'s ${getShipName(shipID)}!`, 'sunk');
+                    }
+                    else{
+                        await DOMControlModule.showTurnMessage(defaultMessage + `it's a hit!`, 'hit');
+                    }
+                }
+                else {
+                    await DOMControlModule.showTurnMessage(defaultMessage + `and misses.`, 'miss');
+                }
+
+                if(opponent.checkGameOver()){
+                    gameController.setGameState('game_over');
+                    await Promise.all([
+                        DOMControlModule.showTurnIndicator(`The game is over`),
+                        DOMControlModule.showTurnMessage(`The winner is ${player.getPlayerName()}.`, 'winner')
+                    ]);
+                }
+                else {
+                    
+                }
             }
         }
+    }
+}
+
+function getShipName(shipID) {
+    if(shipID === 0) {
+        return 'carrier';
+    }
+    if(shipID === 1) {
+        return 'battleship';
+    }
+    if(shipID === 2) {
+        return 'destroyer';
+    }
+    if(shipID === 3) {
+        return 'submarine';
+    }
+    if(shipID === 4) {
+        return 'patrol boat';
     }
 }

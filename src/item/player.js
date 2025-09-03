@@ -34,6 +34,10 @@ class Player {
         return this.#gameboard.receiveAttack(row, col);
     }
 
+    checkSunkShip(shipID) {
+        return this.#gameboard.checkSunkShip(shipID);
+    }
+
     #hasAttacked(coordinate) {
         return this.#attackOpponentHistory.has(coordinate);
     }

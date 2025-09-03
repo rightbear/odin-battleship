@@ -42,11 +42,11 @@ export function addMessageRegion() {
     const messageRegion = document.createElement("div");
     messageRegion.classList.add("messageRegion");
     
-    const turnMsg = document.createElement("div");
-    turnMsg.classList.add("turnMsg");
     const turnIndicator = document.createElement("div");
     turnIndicator.classList.add("turnIndicator");
-    messageRegion.append(turnMsg, turnIndicator);
+    const turnMsg = document.createElement("div");
+    turnMsg.classList.add("turnMsg");
+    messageRegion.append(turnIndicator, turnMsg);
 
     return messageRegion;
 }
@@ -134,14 +134,14 @@ export function markAttackResultOnCell(currentButton, shipID, isAttack){
 
 /**********/
 
-export function showTurnIndicator(playerName, speed = 100) { 
+export function showTurnIndicator(message, speed = 10) { 
     const turnIndicator = document.querySelector('.turnIndicator')
-    const message = `It's ${playerName}'s turn`;
 
     return new Promise(resolve => {
         turnIndicator.textContent = '';
         let index = 0;
         
+        // Use recursion to display typewriter effect
         function typeNextCharacter() {
             if (index < message.length) {
                 turnIndicator.textContent += message.charAt(index);
@@ -159,8 +159,8 @@ export function showTurnIndicator(playerName, speed = 100) {
 }
 
 
-// type: 'info', 'hit', 'miss', 'sunk', 'winner', 'error'
-export function showTurnMessage(message, type = 'info', speed = 100) {
+// type: 'info', 'hit', 'miss', 'sunk', 'winner'
+export function showTurnMessage(message, type, speed = 10) {
     const turnMsg = document.querySelector('.turnMsg');
     turnMsg.className = `turnMsg ${type}`;
     
@@ -168,6 +168,7 @@ export function showTurnMessage(message, type = 'info', speed = 100) {
         turnMsg.textContent = '';
         let index = 0;
         
+        // Use recursion to display typewriter effect
         function typeNextCharacter() {
             if (index < message.length) {
                 turnMsg.textContent += message.charAt(index);
@@ -185,6 +186,7 @@ export function showTurnMessage(message, type = 'info', speed = 100) {
 }
 
 // Simulate the following tasks after the animation functions complete
+/*
 export async function simulatePostAnimationTask() {
     // Simulate a asynchronnous task（Like：API calls、Data processing...etc.）
     return new Promise(resolve => {
@@ -194,6 +196,7 @@ export async function simulatePostAnimationTask() {
         }, 100);
     });
 }
+*/
 
 /**********/
 

@@ -13,29 +13,37 @@ export async function initGame(gameController, leftShipList, rightShipList, game
         setupShips(leftPlayer, leftShipList, rightPlayer, rightShipList);
 
         // Initialize the gameboard of gameUI
-        initializeUI(gameMode, leftRole, rightRole, gridDimension);
+        initGameUI(gameMode, leftRole, rightRole, gridDimension);
 
-        // 7. Start the first round
+        // Start the first round
         //await this.startGame();
 
         console.log("Initialize the game successfully.");
 
     } catch (error) {
-        console.error("Initialize the game faily:", error);
+        console.error("Initialize the game unsuccessfully:", error);
     }
 }
 
 function setupShips(leftPlayer, leftShipList, rightPlayer, rightShipList) {
-    for(let i = 0 ; i< leftShipList.length ; i++){
-        leftPlayer.addShip(leftShipList[i]);
-    }
+    leftShipList.forEach(ship => {
+        try {
+            leftPlayer.addShip(ship);
+        } catch (error) {
+            console.warn("Configure ships unsuccessfully", error);
+        }
+    });
 
-    for(let i = 0 ; i< rightShipList.length ; i++){
-        rightPlayer.addShip(rightShipList[i]);
-    }
+    rightShipList.forEach(ship => {
+        try {
+            rightPlayer.addShip(ship);
+        } catch (error) {
+            console.warn("Configure ships unsuccessfully", error);
+        }
+    });
 }
 
-function initializeUI(gameMode, leftRole, rightRole, gridDimension) {
+function initGameUI(gameMode, leftRole, rightRole, gridDimension) {
     const content = document.querySelector('.content');
     const messageRegion = DOMControlModule.addMessageRegion();
     const objectRegion = DOMControlModule.addObjectRegion();
@@ -44,28 +52,17 @@ function initializeUI(gameMode, leftRole, rightRole, gridDimension) {
     content.append(messageRegion, objectRegion, leftGameRegion, rightGameRegion)
 }
 
-export async function testMessageAnimation(player, opponent, message, gameRegion){
-    try {
-        // Simutaneoulty execute two functions related to CSS animation
-        await Promise.all([
-            DOMControlModule.showTurnIndicator(player.getPlayerName()),
-            DOMControlModule.showTurnMessage(message)
-        ]);
-        
-        // After the two animation functions complete, program can execute this line
-        console.log('Animation complete！Start executing the following tasks...');
-        
-        // The following JavaScript programs
-        await DOMControlModule.simulatePostAnimationTask();
-        
-        console.log('All tasks complete！');
-        
-    } catch (error) {
-        console.error('Animations execute incorrectly:', error);
-        console.log('There is error when executing the animation functions');
-    } finally {
-        console.log("Keep executing programs");
+export async function startCurrentRound(gameController, gameRegion) {
+    gameController.setGameState('waiting');
 
-        eventHandlerModule.cellClickEvent(opponent, gameRegion);
-    }
+    let player = gameController.getCurrentPlayer();
+
+    // Simutaneoulty execute two functions related to typewriter animation
+    await Promise.all([
+        DOMControlModule.showTurnIndicator(`It's ${player.getPlayerName()}'s turn`),
+        DOMControlModule.showTurnMessage(`${player.getPlayerName()} is aiming...`, 'info')
+    ]);
+
+    // Set eventListner on opponent's gameboard
+    eventHandlerModule.cellClickEvent(gameController, gameRegion);
 }
