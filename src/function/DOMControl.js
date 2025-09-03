@@ -1,3 +1,5 @@
+import * as eventHandlerModule from './eventHandler.js'
+
 // Create div container for all elements
 function addMain(){
     const main = document.createElement("div");
@@ -56,6 +58,8 @@ export function addObjectRegion() {
     return objectRegion;
 }
 
+/**********/
+
 // gameMode -> 0: player vs computer, 1: player1 vs player2
 // roleID -> 0: Computer(right), 1: Player1(left), 2: Player2(right)
 export function addGameRegion(gameMode, roleID, position, gridDimension = 10) {
@@ -106,37 +110,9 @@ function addRegionGrid(dimension){
     return gridContainer
 }
 
-function addListenderOnGrid(opponent, gameRegion){
-    const regionGrid = gameRegion.querySelector(".regionGrid");
+/**********/
 
-    regionGrid.addEventListener('click', clickHandler);
-
-    function clickHandler(e) {
-        if (e.target.classList.contains('gridCell')) {
-            const clickedCell = e.target;
-            let containsHitOrMiss = clickedCell.classList.contains('hitCell') || clickedCell.classList.contains('missCell')
-
-            if(!containsHitOrMiss){
-                const row = e.target.dataset.cellrow;
-                const col = e.target.dataset.cellcol;
-
-                console.log(`Button at row ${row}, column ${col} clicked!`)
-                const shipID = opponent.receiveAttack(row, col);
-                const isAttack = true;
-                markAttackResultOnCell(clickedCell, shipID, isAttack);
-                
-                /*
-                setTimeout(() => {
-                    regionGrid.removeEventListener('click', clickHandler);
-                    console.log('EventListener 已在函式執行完成後移除');
-                }, 0);
-                */
-            }
-        }
-    }
-}
-
-function markAttackResultOnCell(currentButton, shipID, isAttack){
+export function markAttackResultOnCell(currentButton, shipID, isAttack){
     currentButton.dataset.shipid = shipID
     const shipDot = document.createElement('div');
     shipDot.classList.add('attackDot')
@@ -156,33 +132,9 @@ function markAttackResultOnCell(currentButton, shipID, isAttack){
     currentButton.appendChild(shipDot)
 }
 
-export async function testMessageAnimation(player, opponent, message, gameRegion){
-    try {
-        // Simutaneoulty execute two functions related to CSS animation
-        await Promise.all([
-            showTurnIndicator(player.getPlayerName()),
-            showTurnMessage(message)
-        ]);
-        
-        // After the two animation functions complete, program can execute this line
-        console.log('Animation complete！Start executing the following tasks...');
-        
-        // The following JavaScript programs
-        await simulatePostAnimationTask();
-        
-        console.log('All tasks complete！');
-        
-    } catch (error) {
-        console.error('Animations execute incorrectly:', error);
-        console.log('There is error when executing the animation functions');
-    } finally {
-        console.log("Keep executing programs");
+/**********/
 
-        addListenderOnGrid(opponent, gameRegion)
-    }
-}
-
-function showTurnIndicator(playerName, speed = 100) { 
+export function showTurnIndicator(playerName, speed = 100) { 
     const turnIndicator = document.querySelector('.turnIndicator')
     const message = `It's ${playerName}'s turn`;
 
@@ -208,7 +160,7 @@ function showTurnIndicator(playerName, speed = 100) {
 
 
 // type: 'info', 'hit', 'miss', 'sunk', 'winner', 'error'
-function showTurnMessage(message, type = 'info', speed = 100) {
+export function showTurnMessage(message, type = 'info', speed = 100) {
     const turnMsg = document.querySelector('.turnMsg');
     turnMsg.className = `turnMsg ${type}`;
     
@@ -233,7 +185,7 @@ function showTurnMessage(message, type = 'info', speed = 100) {
 }
 
 // Simulate the following tasks after the animation functions complete
-async function simulatePostAnimationTask() {
+export async function simulatePostAnimationTask() {
     // Simulate a asynchronnous task（Like：API calls、Data processing...etc.）
     return new Promise(resolve => {
         setTimeout(() => {
@@ -243,14 +195,16 @@ async function simulatePostAnimationTask() {
     });
 }
 
+/**********/
+
 /*
     showGameOver(winnerName) {
-        this.showGameMessage(`🎉 ${winnerName} 獲勝！`, 'winner');
+        this.showTurnMessage(`🎉 ${winnerName} 獲勝！`, 'winner');
         this.disableAllBoards();
     }
 
     initializeGameDisplay() {
-        this.showGameMessage("遊戲準備中...", 'info');
+        this.showTurnMessage("遊戲準備中...", 'info');
     }
 
     resetGameDisplay() {
@@ -263,7 +217,7 @@ async function simulatePostAnimationTask() {
         });
 
         // 重置訊息
-        this.showGameMessage("", 'info');
+        this.showTurnMessage("", 'info');
         if (this.turnIndicator) {
             this.turnIndicator.textContent = "";
         }
