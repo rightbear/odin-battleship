@@ -1,16 +1,22 @@
 import { Player } from './player.js';
+import * as eventHandlerModule from '../function/eventHandler.js';
+import * as DOMControlModule from '../function/DOMControl.js'
 
 class GameController {
+    #gameMode;        // 0: Human vs Computer, 1: Human vs Human
     #leftPlayer;
     #rightPlayer;
     #currentPlayer;
-    #gameState;
+    #gameState;        // 'waiting', 'attacking', 'game_over'
+    #gameRegions;      // Store the DOM elements of gameRegion 
 
-    constructor(leftName, isLeftCom, rightName, isRightCom, dimension = 10) {
+    constructor(gameMode, leftName, isLeftCom, rightName, isRightCom, dimension = 10) {
+        this.#gameMode = gameMode;
         this.#leftPlayer = new Player(leftName, isLeftCom, dimension, dimension);
         this.#rightPlayer = new Player(rightName, isRightCom, dimension, dimension);
         this.#currentPlayer = this.#leftPlayer;
-        this.#gameState = 'waiting'; // 'waiting', 'attacking', 'game_over'
+        this.#gameState = 'waiting';
+        this.#gameRegions = {};
     }
     
     getCurrentPlayer() {
@@ -21,12 +27,12 @@ class GameController {
         return (this.#currentPlayer === this.#leftPlayer) ? this.#rightPlayer : this.#leftPlayer;
     }
     
-    switchTurn() {
+    #switchTurn() {
         this.#currentPlayer = this.getOpponent()
         this.#gameState = 'waiting';
     }
 
-    getGameState() {
+    #getGameState() {
         return this.#gameState;
     }
 
@@ -34,9 +40,111 @@ class GameController {
         this.#gameState = state;
     }
 
-    isGameOver() {
+    #isGameOver() {
         return this.#gameState === 'game_over';
     }
+
+    // The following methods are functions related to gameLogic
+
+    // initialize the game
+    async initGame(leftShipList, rightShipList, gridDimension) {
+        try {
+            // Add ships for two players
+            this.#setupShips(leftShipList, rightShipList);
+    
+            // Initialize the gameboard of gameUI
+            this.#initGameUI(gridDimension);
+    
+            console.log("Initialize the game successfully.");
+
+            // Start the first round
+            await this.startCurrentRound();
+    
+        } catch (error) {
+            console.error("Initialize the game unsuccessfully:", error);
+        }
+    }
+
+    #setupShips(leftShipList, rightShipList) {
+        leftShipList.forEach(ship => {
+            try {
+                this.#leftPlayer.addShip(ship);
+            } catch (error) {
+                console.warn("Configure ships unsuccessfully", error);
+            }
+        });
+
+        rightShipList.forEach(ship => {
+            try {
+                this.#rightPlayer.addShip(ship);
+            } catch (error) {
+                console.warn("Configure ships unsuccessfully", error);
+            }
+        });
+    }
+
+    #initGameUI(gridDimension) {
+        const content = document.querySelector('.content');
+        const messageRegion = DOMControlModule.addMessageRegion();
+        const objectRegion = DOMControlModule.addObjectRegion();
+        const leftGameRegion = DOMControlModule.addGameRegion(this.#gameMode, 'leftRegion', gridDimension);
+        const rightGameRegion = DOMControlModule.addGameRegion(this.#gameMode, 'rightRegion', gridDimension);
+
+        // Store the reference to gameRegion
+        this.#gameRegions.left = leftGameRegion;
+        this.#gameRegions.right = rightGameRegion;
+
+        content.append(messageRegion, objectRegion, leftGameRegion, rightGameRegion);
+    }
+
+    async startCurrentRound() {
+        if (this.#isGameOver()) return;
+
+        this.setGameState('waiting');
+
+        const player = this.getCurrentPlayer();
+
+        // Simutaneoulty execute two functions related to typewriter animation
+        await Promise.all([
+            DOMControlModule.showTurnIndicator(`It's ${player.getPlayerName()}'s turn`),
+            DOMControlModule.showTurnMessage(`${player.getPlayerName()} is aiming...`, 'info')
+        ]);
+
+        // Set eventListner on opponent's gameboard based on current player
+        if(player.getPlayerRole()) {
+            // Current Player is computer player
+            //await this.#computerAttack();
+        }
+        else {
+            // Current Player is human player
+            const opponentRegion = this.#getOpponentRegion();
+
+            // Set eventListner on opponent's game region
+            // Use cellClickEvent() to set eventHandler, with passed in callback function
+            eventHandlerModule.cellClickEvent(this, opponentRegion, this.#onRoundComplete.bind(this));
+        }
+    }
+
+    // Get opponent's game region
+    #getOpponentRegion() {
+        console.log(this.#currentPlayer);
+        return this.#currentPlayer === this.#leftPlayer ? 
+               this.#gameRegions.right : this.#gameRegions.left;
+    }
+
+    // The callback function called at the end or each round(if the game is not ended)
+    async #onRoundComplete() {
+        console.log('Run onRoundComplete')
+        if (!this.#isGameOver()) {
+            this.#switchTurn();
+            // Use the below line to prevent deep recursive call stack
+            // The below line can guarantees stack clearance
+            await new Promise(resolve => setTimeout(resolve, 0));
+            await this.startCurrentRound();
+        }
+    }
+
+
 
     // 遊戲循環流程
     // -> 畫出兩個棋盤

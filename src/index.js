@@ -1,6 +1,5 @@
 import "./styles.css";
 import * as DOMControlModule from "./function/DOMControl" 
-import * as gameLogicModule from "./function/gameLogic"
 import { GameController } from "./item/gameController"
 
 DOMControlModule.loadInitialLayout()
@@ -20,7 +19,7 @@ const rightName = 'Computer';
 
 const gridDimension = 10
 
-const gameController = new GameController(leftName, isLeftCom, rightName, isRightCom, gridDimension)
+const gameController = new GameController(gameMode, leftName, isLeftCom, rightName, isRightCom, gridDimension);
 
 const leftShipList = [[[0, 2], [0, 3], [0, 4], [0, 5], [0, 6]],
                       [[5, 1], [6, 1], [7, 1], [8, 1]],
@@ -34,10 +33,4 @@ const rightShipList = [[[0, 1]],
                        [[0, 4]],
                        [[0, 5], [0, 6]]];
 
-gameLogicModule.initGame(gameController, leftShipList, rightShipList, gameMode, leftRole, rightRole, gridDimension)
-
-const leftPlayer = gameController.getCurrentPlayer();
-const rightPlayer = gameController.getOpponent();
-const rightRegion = document.querySelector('#rightRegion');
-
-gameLogicModule.startCurrentRound(gameController, rightRegion);
+gameController.initGame(leftShipList, rightShipList, gridDimension)

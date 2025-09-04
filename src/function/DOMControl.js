@@ -1,5 +1,3 @@
-import * as eventHandlerModule from './eventHandler.js'
-
 // Create div container for all elements
 function addMain(){
     const main = document.createElement("div");
@@ -62,24 +60,24 @@ export function addObjectRegion() {
 
 // gameMode -> 0: player vs computer, 1: player1 vs player2
 // roleID -> 0: Computer(right), 1: Player1(left), 2: Player2(right)
-export function addGameRegion(gameMode, roleID, position, gridDimension = 10) {
+export function addGameRegion(gameMode, position, gridDimension = 10) {
     const gameRegion = document.createElement("div");
     gameRegion.classList.add("gameRegion");
-    gameRegion.dataset.role = roleID
     gameRegion.id = position;
 
     const rTitle = document.createElement("div");
     rTitle.classList.add("regionTitle");
-    if(gameMode === 0 && roleID === 0){
-        rTitle.textContent = "Opponent Water"
-    }
-    else if(gameMode === 0 && roleID === 1){
+
+    if(gameMode === 0 && position === 'leftRegion'){
         rTitle.textContent = "Friendly Water"
     }
-    else if(gameMode === 1 && roleID === 1){
+    else if(gameMode === 0 && position === 'rightRegion'){
+        rTitle.textContent = "Opponent Water"
+    }
+    else if(gameMode === 1 && position === 'leftRegion'){
         rTitle.textContent = "Player1 Water"
     }
-    else if(gameMode === 1 && roleID === 2){
+    else if(gameMode === 1 && position === 'rightRegion'){
         rTitle.textContent = "Player2 Water"
     }
 
