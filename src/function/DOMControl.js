@@ -148,7 +148,8 @@ export function showTurnIndicator(message, speed = 10) {
             } else {
                 // Remove cursor and stop animation
                 turnIndicator.textContent = message;
-                resolve();
+                // return the total time of message length
+                resolve(message.length * speed);
             }
         }
         
@@ -175,7 +176,8 @@ export function showTurnMessage(message, type, speed = 10) {
             } else {
                 // Remove cursor and stop animation
                 turnMsg.textContent = message;
-                resolve();
+                // return the total time of message length
+                resolve(message.length * speed);
             }
         }
         
@@ -183,26 +185,9 @@ export function showTurnMessage(message, type, speed = 10) {
     });
 }
 
-// Simulate the following tasks after the animation functions complete
-/*
-export async function simulatePostAnimationTask() {
-    // Simulate a asynchronnous task（Like：API calls、Data processing...etc.）
-    return new Promise(resolve => {
-        setTimeout(() => {
-            console.log('The following execution of tasks complete');
-            resolve();
-        }, 100);
-    });
-}
-*/
-
 /**********/
 
 /*
-    initializeGameDisplay() {
-        this.showTurnMessage("遊戲準備中...", 'info');
-    }
-
     getCell(row, col, boardType = 'player1') {
         const board = document.querySelector(`#${boardType}-board`);
         return board.querySelector(`[data-row="${row}"][data-col="${col}"]`);

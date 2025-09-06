@@ -16,6 +16,7 @@ class GameController {
     #gameState;       // 'waiting', 'attacking', 'game_over'
     #gameRegions;
     #isRoundActive;     // Prevent asynchronous recursive call stack problem 
+    #lastAnimationDuration;     // Store the lastly max animation time
 
     constructor(gameMode, leftName, isLeftCom, rightName, isRightCom, dimension = 10) {
         this.#gameMode = gameMode;
@@ -26,9 +27,10 @@ class GameController {
             throw new Error('Failed to initialize players: ' + error.message);
         }
         this.#currentPlayer = this.#leftPlayer;
-        this.#gameState = GAME_STATES.WAITING;;
+        this.#gameState = GAME_STATES.WAITING;
         this.#gameRegions = {};
         this.#isRoundActive = false;
+        this.#lastAnimationDuration = 0;
     }
     
     getCurrentPlayer() {
@@ -41,7 +43,7 @@ class GameController {
     
     #switchTurn() {
         this.#currentPlayer = this.getOpponent()
-        this.#gameState = 'waiting';
+        this.#gameState = GAME_STATES.WAITING;
     }
 
     getGameState() {
@@ -53,6 +55,14 @@ class GameController {
             throw new Error(`Invalid game state: ${state}`);
         }
         this.#gameState = state;
+    }
+
+    getAnimationDuration() {
+        return this.#lastAnimationDuration;
+    }
+
+    setAnimationDuration(timeLength) {
+        this.#lastAnimationDuration = timeLength;
     }
 
     #isGameOver() {
@@ -130,8 +140,9 @@ class GameController {
     }
 
     async startCurrentRound() {
-        if (this.#isGameOver()) return;
+        if (this.#isGameOver() || this.#isRoundActive) return;
 
+        console.log("11111111111111111111111111111111");
         // Mark the start of the current round
         this.#isRoundActive = true;
         this.setGameState(GAME_STATES.WAITING);
@@ -140,12 +151,15 @@ class GameController {
 
         // Simutaneoulty execute two functions related to typewriter animation
         try {
-            await Promise.all([
+            const [indicatorDuration, messageDuration] = await Promise.all([
                 DOMControlModule.showTurnIndicator(`It's ${player.getPlayerName()}'s turn`),
                 DOMControlModule.showTurnMessage(`${player.getPlayerName()} is aiming...`, 'info')
             ]);
+            // Take the longer animation time between the tow functions of the turn
+            this.setAnimationDuration(Math.max(indicatorDuration, messageDuration));
         } catch (error) {
             console.error('Failed to display turn information:', error);
+            this.#isRoundActive = false;
             return;
         }
 
@@ -185,24 +199,25 @@ class GameController {
     // The callback function called at the end or each round(if the game is not ended)
     async #onRoundComplete() {
         console.log('Run onRoundComplete')
-        if (!this.#isGameOver()) {
-            try {
-                this.#switchTurn();
 
-                // Mark the end of the current round, allowing for next round
-                this.#isRoundActive = false;
-                await this.startCurrentRound();
-            } catch (error) {
-                console.error('Failed to start next round:', error);
-                this.setGameState(GAME_STATES.GAME_OVER); // 緊急終止遊戲
-                await DOMControlModule.showTurnMessage('Game terminated due to an error.', 'error');
-            }
-        }
-        else {
-            console.log('Game is over, stopping round');
-
-            // Mark the end of the all game
+        if (this.#isGameOver()) {
             this.#isRoundActive = false;
+            return;
+        }
+
+        try {
+            this.#switchTurn();
+
+            // Mark the end of the current round, allowing for next round
+            this.#isRoundActive = false;
+            // Use the sum of the last animation time and additional buffer time(50ms)
+            // to make sure all previous animations be finished
+            //await new Promise(resolve => setTimeout(resolve, this.getAnimationDuration() + 50));
+            await this.startCurrentRound();
+        } catch (error) {
+            console.error('Failed to start next round:', error);
+            this.setGameState(GAME_STATES.GAME_OVER);
+            await DOMControlModule.showTurnMessage('Game terminated due to an error.', 'error');
         }
     }
 

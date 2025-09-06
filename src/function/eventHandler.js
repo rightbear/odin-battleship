@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
 });
 
+const GAME_STATES = {
+    WAITING: 'waiting',
+    ATTACKING: 'attacking',
+    GAME_OVER: 'game_over'
+};
 
 export function cellClickEvent(gameController, gameRegion, onRoundComplete = null){
     const regionGrid = gameRegion.querySelector(".regionGrid");
@@ -13,7 +18,7 @@ export function cellClickEvent(gameController, gameRegion, onRoundComplete = nul
     regionGrid.addEventListener('click', clickHandler);
 
     async function clickHandler(event) {
-        if (gameController.getGameState() !== 'waiting') return;
+        if (gameController.getGameState() !== GAME_STATES.WAITING) return;
 
         if (event.target.classList.contains('gridCell')) {
             const clickedCell = event.target;
@@ -24,7 +29,7 @@ export function cellClickEvent(gameController, gameRegion, onRoundComplete = nul
                 // Remove eventHandler after clicking the cell
                 regionGrid.removeEventListener('click', clickHandler);
 
-                gameController.setGameState('attacking');
+                gameController.setGameState(GAME_STATES.ATTACKING);
 
                 const row = Number(event.target.dataset.cellrow);
                 const col = Number(event.target.dataset.cellcol);
@@ -55,26 +60,29 @@ async function handleAttack(gameController, clickedCell, row, col, onRoundComple
 
     // Show the message of the attacking result
     const defaultMessage = `${player.getPlayerName()} fires a shot into ${opponent.getPlayerName()}'s waters ...... `;
+    let animationDuration = 0
     if (shipID >= 0) {
         const message = opponent.checkSunkShip(shipID)
             ? defaultMessage + `and sunk ${opponent.getPlayerName()}'s ${getShipName(shipID)}!`
             : defaultMessage + `it's a hit!`;
-        await DOMControlModule.showTurnMessage(message, shipID >= 0 ? 'hit' : 'sunk');
+        animationDuration = await DOMControlModule.showTurnMessage(message, shipID >= 0 ? 'hit' : 'sunk');
     } else {
-        await DOMControlModule.showTurnMessage(defaultMessage + `and misses.`, 'miss');
+        animationDuration = await DOMControlModule.showTurnMessage(defaultMessage + `and misses.`, 'miss');
     }
 
     // Show the message if the game is over after the attacking 
     if(opponent.checkGameOver()){
         // The game is ended and there is no following round
-        gameController.setGameState('game_over');
-        await Promise.all([
+        gameController.setGameState(GAME_STATES.GAME_OVER);
+        const [indicatorDuration, messageDuration] = await Promise.all([
             DOMControlModule.showTurnIndicator(`The game is over`),
             DOMControlModule.showTurnMessage(`The winner is ${player.getPlayerName()}.`, 'winner')
         ]);
+        gameController.setAnimationDuration(Math.max(indicatorDuration, messageDuration));
     }
     else {
-        // // The game is ended and there are still following rounds
+        gameController.setAnimationDuration(animationDuration);
+        // The game is ended and there are still following rounds
         if (onRoundComplete) {
             onRoundComplete();
         }
