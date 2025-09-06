@@ -2,21 +2,33 @@ import { Player } from './player.js';
 import * as eventHandlerModule from '../function/eventHandler.js';
 import * as DOMControlModule from '../function/DOMControl.js'
 
+const GAME_STATES = {
+    WAITING: 'waiting',
+    ATTACKING: 'attacking',
+    GAME_OVER: 'game_over'
+};
+
 class GameController {
     #gameMode;        // 0: Human vs Computer, 1: Human vs Human
     #leftPlayer;
     #rightPlayer;
     #currentPlayer;
-    #gameState;        // 'waiting', 'attacking', 'game_over'
-    #gameRegions;      // Store the DOM elements of gameRegion 
+    #gameState;       // 'waiting', 'attacking', 'game_over'
+    #gameRegions;
+    #isRoundActive;     // Prevent asynchronous recursive call stack problem 
 
     constructor(gameMode, leftName, isLeftCom, rightName, isRightCom, dimension = 10) {
         this.#gameMode = gameMode;
-        this.#leftPlayer = new Player(leftName, isLeftCom, dimension, dimension);
-        this.#rightPlayer = new Player(rightName, isRightCom, dimension, dimension);
+        try {
+            this.#leftPlayer = new Player(leftName, isLeftCom, dimension, dimension);
+            this.#rightPlayer = new Player(rightName, isRightCom, dimension, dimension);
+        } catch (error) {
+            throw new Error('Failed to initialize players: ' + error.message);
+        }
         this.#currentPlayer = this.#leftPlayer;
-        this.#gameState = 'waiting';
+        this.#gameState = GAME_STATES.WAITING;;
         this.#gameRegions = {};
+        this.#isRoundActive = false;
     }
     
     getCurrentPlayer() {
@@ -32,22 +44,28 @@ class GameController {
         this.#gameState = 'waiting';
     }
 
-    #getGameState() {
+    getGameState() {
         return this.#gameState;
     }
 
     setGameState(state) {
+        if (!Object.values(GAME_STATES).includes(state)) {
+            throw new Error(`Invalid game state: ${state}`);
+        }
         this.#gameState = state;
     }
 
     #isGameOver() {
-        return this.#gameState === 'game_over';
+        return this.#gameState === GAME_STATES.GAME_OVER;;
     }
 
     // The following methods are functions related to gameLogic
 
     // initialize the game
     async initGame(leftShipList, rightShipList, gridDimension) {
+        if (!Number.isInteger(gridDimension) || gridDimension <= 0) {
+            throw new Error('Invalid grid dimension');
+        }
         try {
             // Add ships for two players
             this.#setupShips(leftShipList, rightShipList);
@@ -66,6 +84,13 @@ class GameController {
     }
 
     #setupShips(leftShipList, rightShipList) {
+        if (!Array.isArray(leftShipList) || !Array.isArray(rightShipList)) {
+            throw new Error('Invalid ship list provided');
+        }
+        if (leftShipList.length === 0 || rightShipList.length === 0) {
+            throw new Error('Ship list cannot be empty');
+        }
+
         leftShipList.forEach(ship => {
             try {
                 this.#leftPlayer.addShip(ship);
@@ -85,11 +110,18 @@ class GameController {
 
     #initGameUI(gridDimension) {
         const content = document.querySelector('.content');
+        if (!content) {
+            throw new Error('Content element not found');
+        }
+
         const messageRegion = DOMControlModule.addMessageRegion();
         const objectRegion = DOMControlModule.addObjectRegion();
         const leftGameRegion = DOMControlModule.addGameRegion(this.#gameMode, 'leftRegion', gridDimension);
         const rightGameRegion = DOMControlModule.addGameRegion(this.#gameMode, 'rightRegion', gridDimension);
 
+        if (!leftGameRegion || !rightGameRegion) {
+            throw new Error('Failed to create game regions');
+        }
         // Store the reference to gameRegion
         this.#gameRegions.left = leftGameRegion;
         this.#gameRegions.right = rightGameRegion;
@@ -100,20 +132,34 @@ class GameController {
     async startCurrentRound() {
         if (this.#isGameOver()) return;
 
-        this.setGameState('waiting');
+        // Mark the start of the current round
+        this.#isRoundActive = true;
+        this.setGameState(GAME_STATES.WAITING);
 
         const player = this.getCurrentPlayer();
 
         // Simutaneoulty execute two functions related to typewriter animation
-        await Promise.all([
-            DOMControlModule.showTurnIndicator(`It's ${player.getPlayerName()}'s turn`),
-            DOMControlModule.showTurnMessage(`${player.getPlayerName()} is aiming...`, 'info')
-        ]);
+        try {
+            await Promise.all([
+                DOMControlModule.showTurnIndicator(`It's ${player.getPlayerName()}'s turn`),
+                DOMControlModule.showTurnMessage(`${player.getPlayerName()} is aiming...`, 'info')
+            ]);
+        } catch (error) {
+            console.error('Failed to display turn information:', error);
+            return;
+        }
 
         // Set eventListner on opponent's gameboard based on current player
         if(player.getPlayerRole()) {
             // Current Player is computer player
             //await this.#computerAttack();
+
+            // Current Player is human player
+            const opponentRegion = this.#getOpponentRegion();
+
+            // Set eventListner on opponent's game region
+            // Use cellClickEvent() to set eventHandler, with passed in callback function
+            eventHandlerModule.cellClickEvent(this, opponentRegion, this.#onRoundComplete.bind(this));
         }
         else {
             // Current Player is human player
@@ -127,6 +173,10 @@ class GameController {
 
     // Get opponent's game region
     #getOpponentRegion() {
+        if (!this.#gameRegions.left || !this.#gameRegions.right) {
+            throw new Error('Game regions are not properly initialized');
+        }
+
         console.log(this.#currentPlayer);
         return this.#currentPlayer === this.#leftPlayer ? 
                this.#gameRegions.right : this.#gameRegions.left;
@@ -136,11 +186,23 @@ class GameController {
     async #onRoundComplete() {
         console.log('Run onRoundComplete')
         if (!this.#isGameOver()) {
-            this.#switchTurn();
-            // Use the below line to prevent deep recursive call stack
-            // The below line can guarantees stack clearance
-            await new Promise(resolve => setTimeout(resolve, 0));
-            await this.startCurrentRound();
+            try {
+                this.#switchTurn();
+
+                // Mark the end of the current round, allowing for next round
+                this.#isRoundActive = false;
+                await this.startCurrentRound();
+            } catch (error) {
+                console.error('Failed to start next round:', error);
+                this.setGameState(GAME_STATES.GAME_OVER); // 緊急終止遊戲
+                await DOMControlModule.showTurnMessage('Game terminated due to an error.', 'error');
+            }
+        }
+        else {
+            console.log('Game is over, stopping round');
+
+            // Mark the end of the all game
+            this.#isRoundActive = false;
         }
     }
 

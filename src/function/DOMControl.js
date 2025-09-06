@@ -157,7 +157,7 @@ export function showTurnIndicator(message, speed = 10) {
 }
 
 
-// type: 'info', 'hit', 'miss', 'sunk', 'winner'
+// type: 'info', 'hit', 'miss', 'sunk', 'winner', 'error'
 export function showTurnMessage(message, type, speed = 10) {
     const turnMsg = document.querySelector('.turnMsg');
     turnMsg.className = `turnMsg ${type}`;
@@ -199,29 +199,8 @@ export async function simulatePostAnimationTask() {
 /**********/
 
 /*
-    showGameOver(winnerName) {
-        this.showTurnMessage(`🎉 ${winnerName} 獲勝！`, 'winner');
-        this.disableAllBoards();
-    }
-
     initializeGameDisplay() {
         this.showTurnMessage("遊戲準備中...", 'info');
-    }
-
-    resetGameDisplay() {
-        // 清除所有動畫和狀態類別
-        const cells = document.querySelectorAll('.cell');
-        cells.forEach(cell => {
-            cell.className = 'cell';
-            cell.style.pointerEvents = 'auto';
-            cell.style.cursor = 'pointer';
-        });
-
-        // 重置訊息
-        this.showTurnMessage("", 'info');
-        if (this.turnIndicator) {
-            this.turnIndicator.textContent = "";
-        }
     }
 
     getCell(row, col, boardType = 'player1') {
