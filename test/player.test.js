@@ -137,66 +137,6 @@ describe(("Human player launch attack on component"), () => {
     });
 });
 
-describe(("Computer player launch attacks on component"), () => {
-    test("Fake computer player launch a attack on human player for a ship with 1 length 1 time", () => {
-        let player = new Player("Thor", false, 1, 1);
-        let fakePC = new Player("Loki", false, 1, 1);
-
-        let shipRange = [[0, 0]]
-        let shipID = player.addShip(shipRange);
-        expect(() => fakePC.makeComputerAttack(player)).toThrow('Only computer players can make automatic attacks');
-    });
-    
-    test("Computer player launch a attack on human player for a ship with 1 length 1 time", () => {
-        let computer = new Player("Computer", true, 1, 1);
-        let player = new Player("Thor", false, 1, 1);
-        
-        let shipRange = [[0, 0]]
-        let shipID = player.addShip(shipRange);
-        expect(computer.makeComputerAttack(player)).toBe(0);
-    });
-    
-    test("Computer player launch attacks on human player for ships with 2 length 2 times", () => {
-        let computer = new Player("Computer", true, 10, 10);
-        let player = new Player("Thor", false, 10, 10);
-
-        let ship1Range = [[0, 2], [0, 3]]
-        let ship2Range = [[1, 3], [1, 4]]
-        let ship1ID = player.addShip(ship1Range);
-        let ship2ID = player.addShip(ship2Range);
-        let oldAttack1 = computer.makeComputerAttack(player)
-        let oldAttack2 = computer.makeComputerAttack(player)
-        let oldAttack3 = computer.makeComputerAttack(player)
-        let oldAttack4 = computer.makeComputerAttack(player)
-
-        expect(computer.getAttackNum()).toBe(4);
-    });
-
-    test("Computer player launch a duplicate attack on human player for a ship with 1 length 1 time", () => {
-        let computer = new Player("Computer", true, 1, 1);
-        let player = new Player("Thor", false, 1, 1);
-
-        let shipRange = [[0, 0]]
-        let shipID = player.addShip(shipRange);
-        let oldAttack = computer.makeComputerAttack(player);
-
-        expect(() => computer.makeComputerAttack(player)).toThrow('No more positions to attack');
-    });
-});
-
-describe(("Show the history of attacks"), () => {
-  test("Check the attack history after computer player launch a attack on human player for a ship with 1 length 1 time", () => {
-        let computer = new Player("Computer", true, 1, 1);
-        let player = new Player("Thor", false, 1, 1);
-        
-        let shipRange = [[0, 0]]
-        let shipID = player.addShip(shipRange);
-        let oldAtack = computer.makeComputerAttack(player)
-
-        expect(computer.getAttackHistory()).toEqual([{row: 0, col: 0}]);
-    });
-});
-
 describe(("Check game is over"), () => {
   let player;
     

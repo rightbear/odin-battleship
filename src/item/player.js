@@ -53,36 +53,6 @@ class Player {
         return opponent.receiveAttack(row, col);
     }
 
-    makeComputerAttack(opponent) {
-        if(!this.getPlayerRole()) {
-            throw new Error('Only computer players can make automatic attacks');
-        }
-
-        availableCoords = []
-
-        const [ROWS, COLS] = this.#gameboard.getDimensions()
-
-        // Find all unattacked positions of opponent
-        for(let row = 0 ; row < ROWS ; row++){
-            for (let col = 0 ; col < COLS ; col++){
-                const coordinate = `${row},${col}`;
-
-                if(!this.#hasAttacked(coordinate)){
-                    availableCoords.push([row, col])
-                }
-            }
-        }
-
-        if (availableCoords.length === 0) {
-            throw new Error('No more positions to attack');
-        }
-
-        const randomIndex = Math.floor(Math.random() * availableCoords.length);
-        const [targetRow, targetCol] = availableCoords[randomIndex];
-        
-        return this.attackOpponent(opponent, targetRow, targetCol);
-    }
-
     getAttackNum() {
         return this.#attackOpponentHistory.size;
     }

@@ -13,6 +13,10 @@ const GAME_STATES = {
 export function cellClickEvent(gameController, gameRegion, onRoundComplete = null){
     const regionGrid = gameRegion.querySelector(".regionGrid");
 
+    if (!regionGrid) {
+        throw new Error('Region grid not found');
+    }
+
     // Prevent duplicate eventHandler added
     regionGrid.removeEventListener('click', clickHandler);
     regionGrid.addEventListener('click', clickHandler);
@@ -49,12 +53,12 @@ export function cellClickEvent(gameController, gameRegion, onRoundComplete = nul
     }
 }
 
-async function handleAttack(gameController, clickedCell, row, col, onRoundComplete) {
+export async function handleAttack(gameController, clickedCell, row, col, onRoundComplete) {
     const player = gameController.getCurrentPlayer();
     const opponent = gameController.getOpponent();
     
     console.log(`Button at row ${row}, column ${col} clicked!`)
-    const shipID = opponent.receiveAttack(row, col);
+    const shipID = player.attackOpponent(opponent, row, col);
     const isAttack = true;
     DOMControlModule.markAttackResultOnCell(clickedCell, shipID, isAttack);
 

@@ -40,6 +40,17 @@ class GameController {
     getOpponent() {
         return (this.#currentPlayer === this.#leftPlayer) ? this.#rightPlayer : this.#leftPlayer;
     }
+
+    // Get opponent's game region
+    #getOpponentRegion() {
+        if (!this.#gameRegions.left || !this.#gameRegions.right) {
+            throw new Error('Game regions are not properly initialized');
+        }
+
+        console.log(this.#currentPlayer);
+        return this.#currentPlayer === this.#leftPlayer ? 
+               this.#gameRegions.right : this.#gameRegions.left;
+    }
     
     #switchTurn() {
         this.#currentPlayer = this.getOpponent()
@@ -142,7 +153,6 @@ class GameController {
     async startCurrentRound() {
         if (this.#isGameOver() || this.#isRoundActive) return;
 
-        console.log("11111111111111111111111111111111");
         // Mark the start of the current round
         this.#isRoundActive = true;
         this.setGameState(GAME_STATES.WAITING);
@@ -166,14 +176,7 @@ class GameController {
         // Set eventListner on opponent's gameboard based on current player
         if(player.getPlayerRole()) {
             // Current Player is computer player
-            //await this.#computerAttack();
-
-            // Current Player is human player
-            const opponentRegion = this.#getOpponentRegion();
-
-            // Set eventListner on opponent's game region
-            // Use cellClickEvent() to set eventHandler, with passed in callback function
-            eventHandlerModule.cellClickEvent(this, opponentRegion, this.#onRoundComplete.bind(this));
+            await this.#computerAttack();
         }
         else {
             // Current Player is human player
@@ -185,21 +188,52 @@ class GameController {
         }
     }
 
-    // Get opponent's game region
-    #getOpponentRegion() {
-        if (!this.#gameRegions.left || !this.#gameRegions.right) {
-            throw new Error('Game regions are not properly initialized');
-        }
+    async #computerAttack() {
+        // Simulate the thinking time of computer
+        const thinkingTime = Math.random() * 2000 + 1000; // 1000ms to 3000ms
+        await new Promise(resolve => setTimeout(resolve, thinkingTime));
+         
+        try {
+            const opponentRegion = this.#getOpponentRegion();
+            const opponentGrid = opponentRegion.querySelector('.regionGrid');
 
-        console.log(this.#currentPlayer);
-        return this.#currentPlayer === this.#leftPlayer ? 
-               this.#gameRegions.right : this.#gameRegions.left;
+            if (!opponentGrid) {
+                throw new Error('Opponent grid not found');
+            }
+
+            // Retrieve all cells not been attacked
+            const availableCells = Array.from(opponentGrid.querySelectorAll('.gridCell'))
+                .filter(cell => !cell.classList.contains('hitCell') && !cell.classList.contains('missCell'));
+
+            if (availableCells.length === 0) {
+                console.error('No available cells for computer attack');
+                this.setGameState(GAME_STATES.GAME_OVER);
+                return;
+            }
+
+            // Randomly select a cell to attack
+            const randomIndex = Math.floor(Math.random() * availableCells.length);
+            const targetCell = availableCells[randomIndex];
+
+            this.setGameState(GAME_STATES.ATTACKING);
+
+            const row = Number(targetCell.dataset.cellrow);
+            const col = Number(targetCell.dataset.cellcol);
+            if (isNaN(row) || isNaN(col)) {
+                console.warn('Invalid cell coordinates');
+                return;
+            }
+
+            await eventHandlerModule.handleAttack(this, targetCell, row, col, this.#onRoundComplete.bind(this));
+        } catch (error) {
+            console.error('Computer attack failed:', error);
+            this.setGameState(GAME_STATES.GAME_OVER);
+            await DOMControlModule.showTurnMessage('Computer attack failed. Game terminated.', 'error');
+        }
     }
 
     // The callback function called at the end or each round(if the game is not ended)
     async #onRoundComplete() {
-        console.log('Run onRoundComplete')
-
         if (this.#isGameOver()) {
             this.#isRoundActive = false;
             return;
@@ -212,7 +246,7 @@ class GameController {
             this.#isRoundActive = false;
             // Use the sum of the last animation time and additional buffer time(50ms)
             // to make sure all previous animations be finished
-            //await new Promise(resolve => setTimeout(resolve, this.getAnimationDuration() + 50));
+            await new Promise(resolve => setTimeout(resolve, this.getAnimationDuration() + 50));
             await this.startCurrentRound();
         } catch (error) {
             console.error('Failed to start next round:', error);

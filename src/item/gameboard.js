@@ -21,8 +21,6 @@ class Gameboard {
         }
     }
 
-    getShip
-
     getDimensions() {
         return [this.#rows, this.#columns]
     }
