@@ -1,19 +1,24 @@
 import "./styles.css";
-import * as DOMControlModule from "./function/DOMControl" 
+import * as DOMControlModule from "./function/DOMControl"
+import * as eventHandlerModule from "./function/eventHandler" 
 import { GameController } from "./item/gameController"
 
-DOMControlModule.loadInitialLayout()
+//DOMControlModule -> the page of choosing gameMode
 
-//gameLogicModule -> the page of choosing gameMode
-//gameLogicModule -> the page of placing ships on gmaeboard
+DOMControlModule.loadInitialLayout();
+eventHandlerModule.addModeListener();
 
+
+//DOMControlModule -> the page of placing ships on gameboard
+
+//DOMControlModule -> the page of playing the game
+
+/*
 const gameMode = 0;
 
-const leftRole = 1;
 const isLeftCom  = false;
 const leftName = "Player1";
 
-const rightRole = 0;
 const isRightCom  = true;
 const rightName = 'Computer';
 
@@ -34,3 +39,4 @@ const rightShipList = [[[0, 1]],
                        [[0, 5], [0, 6]]];
 
 gameController.initGame(leftShipList, rightShipList, gridDimension)
+*/

@@ -1,3 +1,5 @@
+import * as localStorageModule from "./localStorage"
+
 // Create div container for all elements
 function addMain(){
     const main = document.createElement("div");
@@ -29,12 +31,134 @@ function addContent(){
     main.appendChild(content);
 }
 
+function removeAllChildren(element) {
+  while (element.firstChild) {
+      element.removeChild(element.firstChild);
+  }
+}
+
+/***********Input page***********/
+
+function addModeSelectionRegion () {
+    const contentRegion = document.querySelector('.content');
+    removeAllChildren(contentRegion);
+  
+    const modeTitle = document.createElement('div');
+
+    modeTitle.classList.add('modeTitle')
+    modeTitle.textContent = 'Select your game mode';
+
+    const modeBtnGroup = document.createElement('div');
+    modeBtnGroup.classList.add('modeBtnGroup')
+
+    const modeBtnMode_0 = document.createElement('button');
+    modeBtnMode_0.textContent = "Player vs Computer"
+    modeBtnMode_0.classList.add('modeBtn');
+    modeBtnMode_0.id = 'pvc';
+
+    const modeBtnMode_1 = document.createElement('button');
+    modeBtnMode_1.textContent = "Player vs Player";
+    modeBtnMode_1.classList.add('modeBtn');
+    modeBtnMode_1.id = 'pvp';
+
+    modeBtnGroup.append(modeBtnMode_0, modeBtnMode_1)
+  
+    const modePlayerInput = document.createElement('div');
+    modePlayerInput.classList.add('modePlayerInput')
+
+    contentRegion.append(modeTitle, modeBtnGroup, modePlayerInput);
+}
+
 // Load all basic elements except the projectList and taskList
 export function loadInitialLayout(){
     addMain();
     addHeader();
     addContent();
+    addModeSelectionRegion();
 }
+
+export function addModePlayerRegion() {
+  const modePlayerInput = document.querySelector('.modePlayerInput');
+  removeAllChildren(modePlayerInput);
+  
+  const currentMode = (localStorageModule.getModeInfo()).mode;
+  const playerForm = document.createElement('form');
+  playerForm.classList.add("playerForm");
+  
+  /**********/
+  const playerNameRegion = document.createElement('div');
+  playerNameRegion.classList.add("playerNameRegion"); 
+  
+  const player1 = document.createElement('div');
+  player1.classList.add("playerName"); 
+  const player1Label = document.createElement('label');
+  player1Label.setAttribute('for', 'player1');
+  player1Label.textContent = 'Player1';
+  const player1Input = document.createElement('input');
+  player1Input.setAttribute('type', 'text');
+  player1Input.id = 'player1';
+  player1Input.setAttribute('name', 'player1');
+  player1Input.required = true;
+  player1Input.minLength = 1;
+  player1Input.maxLength = 15;
+  player1Input.setAttribute(
+    "pattern",
+    "^[A-Za-z0-9]{1,15}$",
+  );
+  player1Input.placeholder = "Enter player1's name";
+  const player1Message = document.createElement("span");
+  player1Message.classList.add("validationMsg");
+  player1.append(player1Label, player1Input, player1Message);
+  
+  const player2 = document.createElement('div');
+  player2.classList.add("playerName"); 
+  const player2Label = document.createElement('label');
+  player2Label.setAttribute('for', 'player2');
+  player2Label.textContent = 'Player2';
+  const player2Input = document.createElement('input');
+  player2Input.setAttribute('type', 'text');
+  player2Input.id = 'player2';
+  player2Input.setAttribute('name', 'player2');
+  player2Input.required = true;
+  player2Input.minLength = 1;
+  player2Input.maxLength = 15;
+  player2Input.setAttribute(
+    "pattern",
+    "^[A-Za-z0-9]{1,15}$",
+  );
+  if(currentMode === 'pvc'){
+     player2Input.value = 'Computer';
+     player2Input.disabled = true;
+  }
+  else {
+    player2Input.placeholder = "Enter player2's name";
+  }
+  const player2Message = document.createElement("span");
+  player2Message.classList.add("validationMsg");
+  player2.append(player2Label, player2Input, player2Message);
+  playerNameRegion.append(player1, player2);
+  
+  /**************/
+  const playerButtomRegion = document.createElement('div');
+  playerButtomRegion.classList.add("playerButtomRegion"); 
+  const confirmBtn =  document.createElement('button');
+  confirmBtn.type = "submit";
+  confirmBtn.id = 'confirmBtn';
+  confirmBtn.value = 'confirm';
+  confirmBtn.textContent = 'Confirm';
+  const resetBtn = document.createElement("button");
+  resetBtn.type = "reset";
+  resetBtn.id = "resetBtn";
+  resetBtn.value = "reset";
+  resetBtn.textContent = "Reset";
+  playerButtomRegion.append(confirmBtn, resetBtn);
+  /**************/
+  
+  playerForm.append(playerNameRegion, playerButtomRegion);
+  modePlayerInput.append(playerForm);
+}
+
+/**********Battle Page**********/
 
 export function addMessageRegion() {
     const messageRegion = document.createElement("div");

@@ -1,8 +1,38 @@
 import * as DOMControlModule from "./DOMControl"
+import * as localStorageModule from "./localStorage"
 
-document.addEventListener('DOMContentLoaded', () => {
-    
-});
+/***********Input page***********/
+
+export function addModeListener()  {  
+  const modeBtnGroup = document.querySelector('.modeBtnGroup');
+  modeBtnGroup.addEventListener('click', function selectMode(event) {
+    if(event.target.tagName.toLowerCase() === 'button') {
+      switchBtnState(event.target);
+      const modeData = {
+        mode: event.target.id,
+      };
+      localStorageModule.saveModeInfo(modeData);
+      console.log('Saved mode info:', modeData);
+      //modeBtnGroup.removeEventListener('click', selectMode);
+      DOMControlModule.addModePlayerRegion();
+    }
+  })
+}
+
+function switchBtnState(clickedBtn) {
+  const modeBtns = document.querySelectorAll('.modeBtn');
+  
+  modeBtns.forEach((modeBtn) => {
+    if(clickedBtn.id === modeBtn.id){
+      modeBtn.classList.add('clicked');
+    }
+    else {
+      modeBtn.classList.remove('clicked');
+    }
+  })
+}
+
+/**********Battle Page**********/
 
 const GAME_STATES = {
     WAITING: 'waiting',
