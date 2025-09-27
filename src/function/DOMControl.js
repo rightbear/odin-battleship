@@ -78,84 +78,81 @@ export function loadInitialLayout(){
 }
 
 export function addModePlayerRegion() {
-  const modePlayerInput = document.querySelector('.modePlayerInput');
-  removeAllChildren(modePlayerInput);
-  
-  const currentMode = (localStorageModule.getModeInfo()).mode;
-  const playerForm = document.createElement('form');
-  playerForm.classList.add("playerForm");
-  
-  /**********/
-  const playerNameRegion = document.createElement('div');
-  playerNameRegion.classList.add("playerNameRegion"); 
-  
-  const player1 = document.createElement('div');
-  player1.classList.add("playerName"); 
-  const player1Label = document.createElement('label');
-  player1Label.setAttribute('for', 'player1');
-  player1Label.textContent = 'Player1';
-  const player1Input = document.createElement('input');
-  player1Input.setAttribute('type', 'text');
-  player1Input.id = 'player1';
-  player1Input.setAttribute('name', 'player1');
-  player1Input.required = true;
-  player1Input.minLength = 1;
-  player1Input.maxLength = 15;
-  player1Input.setAttribute(
-    "pattern",
-    "^[A-Za-z0-9]{1,15}$",
-  );
-  player1Input.placeholder = "Enter player1's name";
-  const player1Message = document.createElement("span");
-  player1Message.classList.add("validationMsg");
-  player1.append(player1Label, player1Input, player1Message);
-  
-  const player2 = document.createElement('div');
-  player2.classList.add("playerName"); 
-  const player2Label = document.createElement('label');
-  player2Label.setAttribute('for', 'player2');
-  player2Label.textContent = 'Player2';
-  const player2Input = document.createElement('input');
-  player2Input.setAttribute('type', 'text');
-  player2Input.id = 'player2';
-  player2Input.setAttribute('name', 'player2');
-  player2Input.required = true;
-  player2Input.minLength = 1;
-  player2Input.maxLength = 15;
-  player2Input.setAttribute(
-    "pattern",
-    "^[A-Za-z0-9]{1,15}$",
-  );
-  if(currentMode === 'pvc'){
-     player2Input.value = 'Computer';
-     player2Input.disabled = true;
-  }
-  else {
-    player2Input.placeholder = "Enter player2's name";
-  }
-  const player2Message = document.createElement("span");
-  player2Message.classList.add("validationMsg");
-  player2.append(player2Label, player2Input, player2Message);
-  playerNameRegion.append(player1, player2);
-  
-  /**************/
-  const playerButtomRegion = document.createElement('div');
-  playerButtomRegion.classList.add("playerButtomRegion"); 
-  const confirmBtn =  document.createElement('button');
-  confirmBtn.type = "submit";
-  confirmBtn.id = 'confirmBtn';
-  confirmBtn.value = 'confirm';
-  confirmBtn.textContent = 'Confirm';
-  const resetBtn = document.createElement("button");
-  resetBtn.type = "reset";
-  resetBtn.id = "resetBtn";
-  resetBtn.value = "reset";
-  resetBtn.textContent = "Reset";
-  playerButtomRegion.append(confirmBtn, resetBtn);
-  /**************/
-  
-  playerForm.append(playerNameRegion, playerButtomRegion);
-  modePlayerInput.append(playerForm);
+    const modePlayerInput = document.querySelector('.modePlayerInput');
+    removeAllChildren(modePlayerInput);
+
+    const currentMode = (localStorageModule.getModeInfo()).mode;
+    const playerForm = document.createElement('form');
+    playerForm.id = 'playerForm';
+
+    const playerNameRegion = document.createElement('div');
+    playerNameRegion.classList.add("playerNameRegion"); 
+
+    const player1 = document.createElement('div');
+    player1.classList.add("playerName"); 
+    const player1Label = document.createElement('label');
+    player1Label.setAttribute('for', 'player1Name');
+    player1Label.textContent = 'Player1';
+    const player1Input = document.createElement('input');
+    player1Input.setAttribute('type', 'text');
+    player1Input.id = 'player1Name';
+    player1Input.setAttribute('name', 'player1');
+    player1Input.required = true;
+    player1Input.minLength = 1;
+    player1Input.maxLength = 15;
+    player1Input.setAttribute(
+        "pattern",
+        "^[A-Za-z0-9]{1,15}$",
+    );
+    player1Input.placeholder = "Enter player1's name";
+    const player1Message = document.createElement("span");
+    player1Message.classList.add("validationMsg");
+    player1.append(player1Label, player1Input, player1Message);
+
+    const player2 = document.createElement('div');
+    player2.classList.add("playerName"); 
+    const player2Label = document.createElement('label');
+    player2Label.setAttribute('for', 'player2Name');
+    player2Label.textContent = 'Player2';
+    const player2Input = document.createElement('input');
+    player2Input.setAttribute('type', 'text');
+    player2Input.id = 'player2Name';
+    player2Input.setAttribute('name', 'player2');
+    player2Input.required = true;
+    player2Input.minLength = 1;
+    player2Input.maxLength = 15;
+    player2Input.setAttribute(
+        "pattern",
+        "^[A-Za-z0-9]{1,15}$",
+    );
+    if(currentMode === 'pvc'){
+        player2Input.value = 'Computer';
+        player2Input.disabled = true;
+    }
+    else {
+        player2Input.placeholder = "Enter player2's name";
+    }
+    const player2Message = document.createElement("span");
+    player2Message.classList.add("validationMsg");
+    player2.append(player2Label, player2Input, player2Message);
+    playerNameRegion.append(player1, player2);
+
+    const playerButtomRegion = document.createElement('div');
+    playerButtomRegion.classList.add("playerButtomRegion"); 
+    const confirmBtn =  document.createElement('button');
+    confirmBtn.type = "submit";
+    confirmBtn.id = 'confirmBtn';
+    confirmBtn.value = 'confirm';
+    confirmBtn.textContent = 'Confirm';
+    const resetBtn = document.createElement("button");
+    resetBtn.type = "reset";
+    resetBtn.id = "resetBtn";
+    resetBtn.value = "reset";
+    resetBtn.textContent = "Reset";
+    playerButtomRegion.append(confirmBtn, resetBtn);
+
+    playerForm.append(playerNameRegion, playerButtomRegion);
+    modePlayerInput.append(playerForm);
 }
 
 /**********Battle Page**********/
@@ -179,8 +176,6 @@ export function addObjectRegion() {
     objectRegion.textContent = 'objects';
     return objectRegion;
 }
-
-/**********/
 
 // gameMode -> 0: player vs computer, 1: player1 vs player2
 // roleID -> 0: Computer(right), 1: Player1(left), 2: Player2(right)
@@ -232,8 +227,6 @@ function addRegionGrid(dimension){
     return gridContainer
 }
 
-/**********/
-
 export function markAttackResultOnCell(currentButton, shipID, isAttack){
     currentButton.dataset.shipid = shipID
     const shipDot = document.createElement('div');
@@ -253,8 +246,6 @@ export function markAttackResultOnCell(currentButton, shipID, isAttack){
 
     currentButton.appendChild(shipDot)
 }
-
-/**********/
 
 export function showTurnIndicator(message, speed = 10) { 
     const turnIndicator = document.querySelector('.turnIndicator')
@@ -280,7 +271,6 @@ export function showTurnIndicator(message, speed = 10) {
         typeNextCharacter();
     });
 }
-
 
 // type: 'info', 'hit', 'miss', 'sunk', 'winner', 'error'
 export function showTurnMessage(message, type, speed = 10) {
@@ -308,12 +298,3 @@ export function showTurnMessage(message, type, speed = 10) {
         typeNextCharacter();
     });
 }
-
-/**********/
-
-/*
-    getCell(row, col, boardType = 'player1') {
-        const board = document.querySelector(`#${boardType}-board`);
-        return board.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-    }
-*/

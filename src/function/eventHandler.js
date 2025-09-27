@@ -1,4 +1,5 @@
 import * as DOMControlModule from "./DOMControl"
+import * as playerFormModule from "./playerFormLogic"
 import * as localStorageModule from "./localStorage"
 
 /***********Input page***********/
@@ -15,6 +16,7 @@ export function addModeListener()  {
       console.log('Saved mode info:', modeData);
       //modeBtnGroup.removeEventListener('click', selectMode);
       DOMControlModule.addModePlayerRegion();
+      addValidationFormEvent();
     }
   })
 }
@@ -30,6 +32,67 @@ function switchBtnState(clickedBtn) {
       modeBtn.classList.remove('clicked');
     }
   })
+}
+
+function addValidationFormEvent() {
+    const allFields = document.querySelectorAll("input");
+    const playerForm = document.querySelector("#playerForm");
+
+    allFields.forEach((fieldElement) => {
+        // Function: If fields on the form lose focus, the form will validate the content in fields
+        fieldElement.addEventListener("blur", () => {
+            playerFormModule.showMessage(fieldElement);
+
+            // If other name field is invalid after the current fiels is blurred, they should be checked again as well
+            allFields.forEach((otherfieldElement) => {
+                if(otherfieldElement !== fieldElement && otherfieldElement.classList.contains('invalidField')){
+                    playerFormModule.showMessage(otherfieldElement);
+                }
+            });
+        });
+
+        // Function: If fields on the form are input, the form will validate the content in fields
+        fieldElement.addEventListener("input", () => {
+            playerFormModule.showMessage(fieldElement);            
+        });
+    });
+
+    // Function: If the submit button on the form is clicked, the form will validate all fields to judge result
+    playerForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        let isFormValid = true;
+
+        allFields.forEach((fieldElement) => {
+            if (fieldElement.disabled) {
+                return;
+            }
+
+            const fieldMessage = document.querySelector(`#${fieldElement.id} + span`);
+
+            playerFormModule.showMessage(fieldElement);
+
+            if (!fieldElement.validity.valid || !playerFormModule.compareName(fieldElement)) {
+                isFormValid = false;
+            }
+        });
+
+        // Function: If all fields pass the validation when form is submitted, the validation successful page will be loadeed
+        if (isFormValid) {
+            console.log("Name Validation Success!!!!!!!!!!!!!!!!!!!!!!");
+        }
+    });
+
+    // Function: If the reset button on the form is clicked, the form will clear all fields and validation messages
+    playerForm.addEventListener("reset", (event) => {
+        event.preventDefault();
+
+        allFields.forEach((fieldElement) => {
+            const fieldMessage = document.querySelector(`#${fieldElement.id}+ span`);
+
+            playerFormModule.resetField(fieldElement, fieldMessage);
+        });
+    });
 }
 
 /**********Battle Page**********/

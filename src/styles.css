@@ -2,6 +2,13 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  --field-label: DarkGreen;
+  --field-input: DarkGreen;
+  --field-valid: RoyalBlue;
+  --field-invalid: FireBrick;
+  --button-background: SeaGreen;
+  --button-hover: #04aa6d;
 }
 
 /*************************************/
@@ -113,7 +120,76 @@ body {
 .playerButtomRegion {
   display: flex;
   flex-direction: row;
+
+  justify-content: center;
+  align-items: center;
 }
+
+.playerButtomRegion button {
+  background-color: var(--button-background);
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.playerButtomRegion button:hover{
+  background-color: var(--button-hover);
+}
+
+form label {
+  color: var(--field-label);
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+form input,
+form select {
+  height: 2rem;
+
+  padding: 0px 5px;
+  border: 2px solid var(--field-input);
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+form input.validField {
+  border: 4px solid var(--field-valid);
+}
+
+form input.invalidField {
+  border: 4px solid var(--field-invalid);
+}
+
+form input:focus {
+  box-shadow: inset 0 0 0 1px var(--field-input);
+}
+
+form input:disabled {
+  border: 2px solid var(--field-input);
+}
+
+form span {
+  height: 2.5rem;
+
+  padding: 5px 5px 0px 5px;
+  font-size: 15px;
+}
+
+form span.validMsg {
+  color: var(--field-valid);
+}
+
+form span.invalidMsg {
+  color: var(--field-invalid);
+}
+
 
 /*******Battle Page**********/
 
