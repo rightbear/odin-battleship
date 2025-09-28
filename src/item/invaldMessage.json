@@ -1,7 +1,7 @@
 {
   "player1": {
     "correct": "The name format is OK.",
-    "required": "Please set up a name between 1 and 15 characters.",
+    "required": "Please set up a name with 1 to 25 characters.",
     "pattern": "Only include numbers and uppercase & lowercase letters",
     "length": "Please enter within 1 to 15 characters.",
     "duplicate": "Player1's name cannot be same as player2's name."
@@ -9,7 +9,7 @@
 
   "player2": {
     "correct": "The name format is OK.",
-    "required": "Please set up a name between 1 and 15 characters.",
+    "required": "Please set up a name with 1 to 25 characters.",
     "pattern": "Only include numbers and uppercase & lowercase letters",
     "length": "Please enter within 1 to 15 characters.",
     "duplicate": "Player2's name cannot be same as player1's name."

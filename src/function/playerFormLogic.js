@@ -22,13 +22,11 @@ function showError(fieldElement, fieldMessage) {
     } else if (fieldElement.validity.patternMismatch) {
     // If the value doesn't match the pattern
         fieldMessage.textContent = messageData[`${fieldElement.name}`]["pattern"];
-    } else {
-        fieldMessage.textContent = "Unknown reason to fail";
-    }
-
-    if (!compareName(fieldElement)) {
+    } else if (!compareName(fieldElement)) {
     // If the the player name is duplicate
         fieldMessage.textContent = messageData[`${fieldElement.name}`]["duplicate"];
+    } else {
+        fieldMessage.textContent = "Unknown reason to fail";
     }
 
     // Removes the `Valid` class and add the `Invalid` class in the fieldElement

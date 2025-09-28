@@ -6,6 +6,8 @@ import * as localStorageModule from "./localStorage"
 
 export function addModeListener()  {  
   const modeBtnGroup = document.querySelector('.modeBtnGroup');
+  const modePlayerInput = document.querySelector('.modePlayerInput');
+
   modeBtnGroup.addEventListener('click', function selectMode(event) {
     if(event.target.tagName.toLowerCase() === 'button') {
       switchBtnState(event.target);
@@ -14,7 +16,8 @@ export function addModeListener()  {
       };
       localStorageModule.saveModeInfo(modeData);
       console.log('Saved mode info:', modeData);
-      //modeBtnGroup.removeEventListener('click', selectMode);
+      modePlayerInput.style.borderColor = "#009688";
+
       DOMControlModule.addModePlayerRegion();
       addValidationFormEvent();
     }

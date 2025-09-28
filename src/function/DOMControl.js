@@ -32,9 +32,9 @@ function addContent(){
 }
 
 function removeAllChildren(element) {
-  while (element.firstChild) {
-      element.removeChild(element.firstChild);
-  }
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
 }
 
 /***********Input page***********/
@@ -64,7 +64,7 @@ function addModeSelectionRegion () {
     modeBtnGroup.append(modeBtnMode_0, modeBtnMode_1)
   
     const modePlayerInput = document.createElement('div');
-    modePlayerInput.classList.add('modePlayerInput')
+    modePlayerInput.classList.add('modePlayerInput');
 
     contentRegion.append(modeTitle, modeBtnGroup, modePlayerInput);
 }
@@ -99,10 +99,10 @@ export function addModePlayerRegion() {
     player1Input.setAttribute('name', 'player1');
     player1Input.required = true;
     player1Input.minLength = 1;
-    player1Input.maxLength = 15;
+    player1Input.maxLength = 25;
     player1Input.setAttribute(
         "pattern",
-        "^[A-Za-z0-9]{1,15}$",
+        "^[A-Za-z0-9]{1,25}$",
     );
     player1Input.placeholder = "Enter player1's name";
     const player1Message = document.createElement("span");
@@ -120,10 +120,10 @@ export function addModePlayerRegion() {
     player2Input.setAttribute('name', 'player2');
     player2Input.required = true;
     player2Input.minLength = 1;
-    player2Input.maxLength = 15;
+    player2Input.maxLength = 25;
     player2Input.setAttribute(
         "pattern",
-        "^[A-Za-z0-9]{1,15}$",
+        "^[A-Za-z0-9]{1,25}$",
     );
     if(currentMode === 'pvc'){
         player2Input.value = 'Computer';
